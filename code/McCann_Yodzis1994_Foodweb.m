@@ -12,6 +12,10 @@
 %--------------------------------------------------------------------------
 clear all; clf
 
+%------ Import N,O,P from flow routing model
+%------ Build relationship between N,P and ingestion
+%------ Build relationship between O and ingestion
+
 xc=0.056; xp=0.01; yc=2.01; yp=5;Ro=0.161; Co=0.5;
 
 %------- Set time step and number of time increments to compute

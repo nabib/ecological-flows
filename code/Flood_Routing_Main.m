@@ -31,8 +31,26 @@ Plot_UH %stays
 %---- Generate stats of rainfall (on daily basis-assumed as marked Poisson)
 Dur=4/24;                       % Duration of storm (hours per day) %climate change model can feed in 
 annual_precip=1200;             % Annual precip. (mm/year)
+
+% --- compute sediment outflow relationship downstream from dam (units =
+% tons/day for sediment, cfs for outflow)
+OutF_model_cfs = [13000 8100 4600 2700 1400 830 420 250 190 155 127 105 81 51 25 13.5];
+% convert Outflow to m3/d
+OutF_model = (OutF_model_cfs * 0.0283168466)*(60*60*24)
+Sed_model = [2700000 1600000 820000 425000 185000 93000 39000 19500 13600 10200 7500 5700 3800 1720 325 17.5];
+s1 = polyfit(OutF_model,Sed_model,1);
+slope1=s1(1);
+intercept1=s1(2);
+y_hat1=slope1*OutF_model+intercept1;
+%plot (OutF_model,Sed_model,'bo')
+%hold on
+%plot (OutF_model,y_hat1,'k-')
+
+%--- Compute nutrient outflow relationship downstream from dam (N,P,O)
+
+
 %--- Loop over return period of daily rainfall
-for kk=1:29 %why 29?
+for kk=1:2 %why 29?
 Ret_P(kk)=kk+1; %stays
 freq=1/(Ret_P(kk));             % Return frequency between days (1/d %stays
  
@@ -62,15 +80,20 @@ for i=1:Ntot
   Od(i)=alpha*((Sd(i)+eps))^(beta); %storage outflow relationship
 %--- This is the mass balance equation:dS/dt = I - (S/alpha)^(1/beta)-ET 
   Sd(i+1)=max(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES),100*eps);
+  %--- Compute sediment amount given outflow
+  Sed(i) = slope1*Od(i) + intercept1;
+  %--- Compute N,P given sedimentation
+  %--- Compute O given outflow
 end
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Plot_Simulations  %for each return frequency (commented for now)
+%Plot_Simulations  %for each return frequency (commented for now)
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %--- Determine the statistical characteristics of the outflow after
 %ignoring the first 20% of the model runs (transients - affected by the
 %fact that the reservoir was empty).
 
 Od1=Od(floor(Ntot/5):Ntot);
+
 % --- compute the mean and std of inflow series
 In_F(kk)=mean(Ih1);
 In_std(kk)=std(Ih1);
@@ -93,5 +116,7 @@ Uc=find(Od1<Ocrit);
 OutF_exe(kk)=length(Uc)/length(Od1);
 end
 
-Plot_OF_ReturnPeriod
+plot(1:Ntot,Sed)
+
+%Plot_OF_ReturnPeriod
 %print -djpeg99 Fig_As50
