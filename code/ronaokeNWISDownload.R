@@ -1,5 +1,6 @@
 library(dataRetrieval)
 library(EGRET)
+library(plyr)
 
 siteNo <- '02080500'
 # Discharge cfs
@@ -26,6 +27,8 @@ for (i in length(pcode)) {
   parameterLabel <- strsplit(parameterInfo$variableName,",")
   siteInfo <- attr(roanokeData, "siteInfo")
   
+  roanokeData <- roanokeData %>% 
+    select(agency_cd,site_no,dateTime,Flow)
   
   write.csv(roanokeData,file = paste(siteInfo$site_no,parameterLabel[[1]][1],".csv",sep = ""))
 }
@@ -40,8 +43,18 @@ for (code in wqpcode) {
   
   # See attributes
   names(attributes(roanokeWQData))
-  
+  roanokeWQData <- rename(roanokeWQData,c("Date"="dateTime","ConcAve" = paste(wqLabels[j],"ConcAve",sep="")))
+  roanokeWQData <- roanokeWQData %>% 
+    select(dateTime,paste(wqLabels[j],"ConcAve",sep=""))
+  fileName <- paste(siteNo,wqLabels[j],sep = "")
+  assign(fileName,roanokeWQData)
   write.csv(roanokeWQData,file = paste(siteNo,wqLabels[j],".csv",sep = ""))
   j = j+1
 }
+
+
+# Join data by common date
+allNWISData <- join_all(list(roanokeData,`02080500DissolvedOxygen`,`02080500Phosphorus`,`02080500SuspendedSediment`,`02080500TotalNitrogen`), by="dateTime", type='inner')
+# Write the final dataframe to a csv file
+write.csv(allNWISData,file ="RoanokeNWISData.csv")
 
