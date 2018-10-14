@@ -46,8 +46,59 @@ y_hat1=slope1*OutF_model+intercept1;
 %hold on
 %plot (OutF_model,y_hat1,'k-')
 
-%--- Compute nutrient outflow relationship downstream from dam (N,P,O)
+%% Compute nutrient outflow relationship downstream from dam (TN, P, DO, Sed)
+%Data from Roanoke NWIS
+A=load('nutrients.txt');
+%--- Outflow (F)
+F=A(:,1);
+%--- Dissolved Oxygen (DO)
+DO=A(:,2);
+%--- Phosphorus (P)
+P=A(:,3);
+%--- Suspended Sediment (Sed)
+Sed=A(:,4);
+%--- Total Nitrogen (TN)
+TN=A(:,5);
 
+%% Linear Regression Regressions
+% DO
+s2 = polyfit(F,DO,1);
+slope2=s2(1);
+intercept2=s2(2);
+y_hat2=slope2*F+intercept2;
+figure(1)
+plot (F,DO,'bo')
+hold on
+plot (F,y_hat2,'k-')
+% P
+s3 = polyfit(F,P,1);
+slope3=s3(1);
+intercept3=s3(2);
+y_hat3=slope3*F+intercept3;
+figure(2)
+plot (F,P,'bo')
+hold on
+plot (F,y_hat3,'k-')
+% Sed
+s4 = polyfit(F,Sed,1);
+slope4=s4(1);
+intercept4=s4(2);
+y_hat4=slope4*F+intercept4;
+figure(3)
+plot (F,Sed,'bo')
+hold on
+plot (F,y_hat4,'k-')
+% TN
+s5 = polyfit(F,TN,1);
+slope5=s5(1);
+intercept5=s5(2);
+y_hat5=slope5*F+intercept5;
+figure(4)
+plot (F,TN,'bo')
+hold on
+plot (F,y_hat5,'k-')
+
+%%
 
 %--- Loop over return period of daily rainfall
 for kk=1:2 %why 29?
@@ -82,9 +133,15 @@ for i=1:Ntot
   Sd(i+1)=max(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES),100*eps);
   %--- Compute sediment amount given outflow
   Sed(i) = slope1*Od(i) + intercept1;
-  %--- Compute N,P given sedimentation
-  %--- Compute O given outflow
+  %--- Compute TN given outflow
+  TNi(i) = slope5*Od(i) + intercept5;
+  %--- Compute P given outflow
+  Ph(i) = slope3*Od(i) + intercept3;
+  %--- Compute DO given outflow
+  dO(i) = slope2*Od(i) + intercept2;
+
 end
+%%
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %Plot_Simulations  %for each return frequency (commented for now)
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -115,8 +172,8 @@ Uc=[];
 Uc=find(Od1<Ocrit);
 OutF_exe(kk)=length(Uc)/length(Od1);
 end
-
-plot(1:Ntot,Sed)
+%%
+plot(1:Ntot,dO)
 
 %Plot_OF_ReturnPeriod
 %print -djpeg99 Fig_As50
