@@ -26,11 +26,15 @@ R=[]; C=[]; P=[];t=[];
 %------- Set initial guess at t=0
 R(1)=1; C(1)=1; P(1)=1;t(1)=0;
 
+%------- Define carrying capacity and intrinsic production-biomass ratio
+K = Od*30;
+r = 1;
+
 for i=1:N-1
     Rn=R(i)/(R(i)+Ro);
     Cn=C(i)/(C(i)+Co);
     %------ Resource budget
-    R(i+1)=R(i)+dt*(R(i)*(1-R(i))-xc*yc*C(i)*Rn);
+    R(i+1)=R(i)+dt*(r*R(i)*(1-(R(i)/K))-xc*yc*C(i)*Rn);
     %------ Consumer budget
     C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn)-xp*yp*P(i)*Cn);
     %------ Predator budget
