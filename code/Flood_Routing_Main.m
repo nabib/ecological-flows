@@ -10,7 +10,7 @@
 %1 Cubic Foot = 0.0283168466 m3
 %g = 9.81 m/s/s - Gravitational acceleration
 %--------------------------------------------------------------------------
-clear all
+clear all 
 clc
 g=9.81;              % Gravitational constant (m/s/s) -stays
 % ----------- Use geometry of Lake Wheeler dam ----------------------------
