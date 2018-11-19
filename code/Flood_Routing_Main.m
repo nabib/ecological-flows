@@ -126,14 +126,11 @@ Ratio_out_2_in=Mass_Out/Mass_rain
 
 %--- Compute outflow from inflow using dS/dt = Inflow - Outflow - ET
 ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
-Sd(1)=0.01*Vcapacity; Qspillway=0;
+Sd(1)=0.01*Vcapacity;
 for i=1:Ntot
-  Qspillway=max(0, Sd(i)-0.5*Vcapacity);
-  Od(i)=alpha*((Sd(i)+eps))^(beta)+Qspillway; %storage outflow relationship
+  Od(i)=alpha*((Sd(i)+eps))^(beta); %storage outflow relationship
 %--- This is the mass balance equation:dS/dt = I - (S/alpha)^(1/beta)-ET 
   Sd(i+1)=max(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES),100*eps);
-  Sdtemp=Sd(i+1); %flood management
-  Sdtemp(i+1)=min(Sd(i+1),0.5*Vcapacity);
   %Od
   %--- Compute sediment amount given outflow
   Sed(i) = slope1*Od(i) + intercept1;
