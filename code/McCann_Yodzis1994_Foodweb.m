@@ -13,6 +13,21 @@
 clear all; clf
 
 %------ Import N,O,P from flow routing model
+
+%Data from Roanoke NWIS
+phytopl=csvread('../data/RoanokePhytoplData.csv',1);
+%--- Phytoplankton vs Outflow Regression
+outfl = phytopl(:,1);
+phyt = phytopl(:,2);
+s1 = polyfit(outfl,phyt,1);
+slope1=s1(1);
+intercept1=s1(2);
+y_hat1=slope1*outfl+intercept1;
+figure(1)
+plot (outfl,phyt,'bo')
+hold on
+plot (outfl,y_hat1,'k-')
+
 %------ Build relationship between N,P and ingestion
 %------ Build relationship between O and ingestion
 
@@ -27,7 +42,7 @@ R=[]; C=[]; P=[];t=[];
 R(1)=1; C(1)=1; P(1)=1;t(1)=0;
 
 %------- Define carrying capacity and intrinsic production-biomass ratio
-K = Od*30;
+K = slope1*Od+intercept1;
 r = 1;
 
 for i=1:N-1
