@@ -67,36 +67,36 @@ slope2=s2(1);
 intercept2=s2(2);
 y_hat2=slope2*F+intercept2;
 figure(1)
-plot (F,DO,'bo')
-hold on
-plot (F,y_hat2,'k-')
+%plot (F,DO,'bo')
+%hold on
+%plot (F,y_hat2,'k-')
 % P
 s3 = polyfit(F,P,1);
 slope3=s3(1);
 intercept3=s3(2);
 y_hat3=slope3*F+intercept3;
 figure(2)
-plot (F,P,'bo')
-hold on
-plot (F,y_hat3,'k-')
+%plot (F,P,'bo')
+%hold on
+%plot (F,y_hat3,'k-')
 % Sed
 s4 = polyfit(F,Sed,1);
 slope4=s4(1);
 intercept4=s4(2);
 y_hat4=slope4*F+intercept4;
 figure(3)
-plot (F,Sed,'bo')
-hold on
-plot (F,y_hat4,'k-')
+%plot (F,Sed,'bo')
+%hold on
+%plot (F,y_hat4,'k-')
 % TN
 s5 = polyfit(F,TN,1);
 slope5=s5(1);
 intercept5=s5(2);
 y_hat5=slope5*F+intercept5;
 figure(4)
-plot (F,TN,'bo')
-hold on
-plot (F,y_hat5,'k-')
+%plot (F,TN,'bo')
+%hold on
+%plot (F,y_hat5,'k-')
 
 %%
 
