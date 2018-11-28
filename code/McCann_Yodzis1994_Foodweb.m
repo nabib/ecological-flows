@@ -13,6 +13,7 @@
 clear all; clf
 
 %------ Import N,O,P from flow routing model
+Flood_Routing_Main;
 
 %Data from Roanoke NWIS
 phytopl=csvread('../data/RoanokePhytoplData.csv',1);
@@ -31,8 +32,6 @@ plot (outfl,y_hat6,'k-')
 %------ Build relationship between N,P and ingestion
 %------ Build relationship between O and ingestion
 
-Flood_Routing_Main;
-
 xc=0.056; xp=0.01; yc=2.01; yp=5; 
 Ro=0.161; Co=0.5;
 
@@ -44,21 +43,37 @@ R=[]; C=[]; P=[];t=[];
 %------- Set initial guess at t=0
 R(1)=1; C(1)=1; P(1)=1;t(1)=0;
 
-%------- Define carrying capacity and intrinsic production-biomass ratio
+%% ------- Define carrying capacity and intrinsic production-biomass ratio
 r = 1;
-
+%K = 1;
 for i=1:Ntot
-    K(i) = slope6*Od(i)+intercept6;
-    Rn=R(i)./(R(i)+Ro);
-    Cn=C(i)./(C(i)+Co);
+    K = slope6*Od(i)+intercept6;
+    Rn=R(i)/(R(i)+Ro);
+    Cn=C(i)/(C(i)+Co);
     %------ Resource budget
-    R(i+1)=R(i)+dt*(r*(R(i)*(1-(R(i)./K(i))))-xc*yc*C(i)*Rn);
+    R(i+1)=R(i)+dt*((r*R(i)*(1-(R(i)/K)))-xc*yc*C(i)*Rn);
     %------ Consumer budget
     C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn)-xp*yp*P(i)*Cn);
     %------ Predator budget
     P(i+1)=P(i)+dt*(xp*P(i)*(-1+yp*Cn));
     t(i+1)=t(i)+dt;
 end
+
+
+  uno=(Ih1(i)/Ih_mean)^2;
+  yp=ypb;
+  Ro=Rob*(0.5+uno); 
+  Co=Cob*(0.5+uno);
+  
+  Rn=Rf(i)/(Rf(i)+Ro);
+  Cn=Cf(i)/(Cf(i)+Co);
+  %------ Resource budget
+  Rf(i+1)=Rf(i)+dt*(Rf(i)*(1-Rf(i))-xc*yc*Cf(i)*Rn);
+  %------ Consumer budget
+  Cf(i+1)=Cf(i)+dt*(xc*Cf(i)*(-1+yc*Rn)-xp*yp*Pf(i)*Cn);
+  %------ Predator budget
+  Pf(i+1)=Pf(i)+dt*(xp*Pf(i)*(-1+yp*Cn));
+  t(i+1)=t(i)+dt;
 
 figure(1)
 clf
