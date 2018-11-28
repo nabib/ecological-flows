@@ -25,9 +25,9 @@ slope6=s6(1);
 intercept6=s6(2);
 y_hat6=slope6*outfl+intercept6;
 figure(1)
-plot (outfl,phyt,'bo')
+loglog (outfl,phyt,'bo')
 hold on
-plot (outfl,y_hat6,'k-')
+plot(outfl,y_hat6,'k-')
 
 %------ Build relationship between N,P and ingestion
 %------ Build relationship between O and ingestion
@@ -43,15 +43,47 @@ R=[]; C=[]; P=[];t=[];
 %------- Set initial guess at t=0
 R(1)=1; C(1)=1; P(1)=1;t(1)=0;
 
+%% Multiple linear regression
+Flow = phytopl(:,1);
+DO = phytopl(:,2);
+Phos = phytopl(:,3);
+SusSed = phytopl(:,4);
+TotNit = phytopl(:,5);
+y = phytopl(:,6);
+
+%X = [ones(size(Flow)) Flow DO Phos SusSed TotNit];
+X = [ones(size(Flow)) Flow DO];
+b = regress(y,X)    % Removes NaN data
+
+subplot(3,2,1)
+title("Flow")
+hold on
+plot(Flow,y,'o')
+subplot(3,2,2)
+title("DO")
+hold on
+plot(DO,y,'o')
+subplot(3,2,3)
+title("Phos")
+hold on
+plot(Phos,y,'o')
+subplot(3,2,4)
+title("Sed")
+hold on
+plot(SusSed,y,'o')
+subplot(3,2,5)
+title("Nit")
+hold on
+plot(TotNit,y,'o')
 %% ------- Define carrying capacity and intrinsic production-biomass ratio
 r = 1;
 %K = 1;
 for i=1:Ntot
-    K = slope6*Od(i)+intercept6;
+    K(i) = slope6*Od(i)+intercept6;
     Rn=R(i)/(R(i)+Ro);
     Cn=C(i)/(C(i)+Co);
     %------ Resource budget
-    R(i+1)=R(i)+dt*((r*R(i)*(1-(R(i)/K)))-xc*yc*C(i)*Rn);
+    R(i+1)=R(i)+dt*((r*R(i)*(1-(R(i)/K(i))))-xc*yc*C(i)*Rn);
     %------ Consumer budget
     C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn)-xp*yp*P(i)*Cn);
     %------ Predator budget
@@ -59,21 +91,21 @@ for i=1:Ntot
     t(i+1)=t(i)+dt;
 end
 
-
-  uno=(Ih1(i)/Ih_mean)^2;
-  yp=ypb;
-  Ro=Rob*(0.5+uno); 
-  Co=Cob*(0.5+uno);
-  
-  Rn=Rf(i)/(Rf(i)+Ro);
-  Cn=Cf(i)/(Cf(i)+Co);
-  %------ Resource budget
-  Rf(i+1)=Rf(i)+dt*(Rf(i)*(1-Rf(i))-xc*yc*Cf(i)*Rn);
-  %------ Consumer budget
-  Cf(i+1)=Cf(i)+dt*(xc*Cf(i)*(-1+yc*Rn)-xp*yp*Pf(i)*Cn);
-  %------ Predator budget
-  Pf(i+1)=Pf(i)+dt*(xp*Pf(i)*(-1+yp*Cn));
-  t(i+1)=t(i)+dt;
+% 
+%   uno=(Ih1(i)/Ih_mean)^2;
+%   yp=ypb;
+%   Ro=Rob*(0.5+uno); 
+%   Co=Cob*(0.5+uno);
+%   
+%   Rn=Rf(i)/(Rf(i)+Ro);
+%   Cn=Cf(i)/(Cf(i)+Co);
+%   %------ Resource budget
+%   Rf(i+1)=Rf(i)+dt*(Rf(i)*(1-Rf(i))-xc*yc*Cf(i)*Rn);
+%   %------ Consumer budget
+%   Cf(i+1)=Cf(i)+dt*(xc*Cf(i)*(-1+yc*Rn)-xp*yp*Pf(i)*Cn);
+%   %------ Predator budget
+%   Pf(i+1)=Pf(i)+dt*(xp*Pf(i)*(-1+yp*Cn));
+%   t(i+1)=t(i)+dt;
 
 figure(1)
 clf
