@@ -175,7 +175,13 @@ Uc=find(Od1<Ocrit);
 OutF_exe(kk)=length(Uc)/length(Od1);
 end
 %%
-plot(1:Ntot,dO)
-
+figure(7)
+plot(1:Ntot+1,Sd)
+hold on
+plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
+figure(10)
+plot(1:Ntot,Od)
+hold on
+plot (1:Ntot,ones(size(1:Ntot))*(mean(Ih1)))
 %Plot_OF_ReturnPeriod
 %print -djpeg99 Fig_As50
