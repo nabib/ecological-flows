@@ -19,13 +19,13 @@ Flood_Routing_Main;
 phytopl=csvread('../data/RoanokePhytoplData.csv',1);
 %--- Phytoplankton vs Outflow Regression
 outfl = phytopl(:,1);
-phyt = phytopl(:,2);
+phyt = phytopl(:,6);
 s6 = polyfit(outfl,phyt,1);
 slope6=s6(1);
 intercept6=s6(2);
 y_hat6=slope6*outfl+intercept6;
 figure(1)
-loglog (outfl,phyt,'bo')
+plot (outfl,phyt,'bo')
 hold on
 plot(outfl,y_hat6,'k-')
 
@@ -52,8 +52,12 @@ TotNit = phytopl(:,5);
 y = phytopl(:,6);
 
 %X = [ones(size(Flow)) Flow DO Phos SusSed TotNit];
-X = [ones(size(Flow)) Flow DO];
+X = [ones(size(Flow)) Flow DO Phos SusSed TotNit];
 b = regress(y,X)    % Removes NaN data
+ry12 = corrcoef(y,X*b);
+ry12 = ry12(1,2)
+plot(X*b,y,'x');
+title(['r = ' num2str(0.01*round(ry12*100))])
 
 subplot(3,2,1)
 title("Flow")
@@ -77,7 +81,7 @@ hold on
 plot(TotNit,y,'o')
 %% ------- Define carrying capacity and intrinsic production-biomass ratio
 r = 1;
-%K = 1;
+K = 1;
 for i=1:Ntot
     K(i) = slope6*Od(i)+intercept6;
     Rn=R(i)/(R(i)+Ro);
@@ -90,22 +94,6 @@ for i=1:Ntot
     P(i+1)=P(i)+dt*(xp*P(i)*(-1+yp*Cn));
     t(i+1)=t(i)+dt;
 end
-
-% 
-%   uno=(Ih1(i)/Ih_mean)^2;
-%   yp=ypb;
-%   Ro=Rob*(0.5+uno); 
-%   Co=Cob*(0.5+uno);
-%   
-%   Rn=Rf(i)/(Rf(i)+Ro);
-%   Cn=Cf(i)/(Cf(i)+Co);
-%   %------ Resource budget
-%   Rf(i+1)=Rf(i)+dt*(Rf(i)*(1-Rf(i))-xc*yc*Cf(i)*Rn);
-%   %------ Consumer budget
-%   Cf(i+1)=Cf(i)+dt*(xc*Cf(i)*(-1+yc*Rn)-xp*yp*Pf(i)*Cn);
-%   %------ Predator budget
-%   Pf(i+1)=Pf(i)+dt*(xp*Pf(i)*(-1+yp*Cn));
-%   t(i+1)=t(i)+dt;
 
 figure(1)
 clf
