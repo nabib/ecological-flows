@@ -75,7 +75,7 @@ s3 = polyfit(F,P,1);
 slope3=s3(1);
 intercept3=s3(2);
 y_hat3=slope3*F+intercept3;
-figure(2)
+%figure(2)
 %plot (F,P,'bo')
 %hold on
 %plot (F,y_hat3,'k-')
@@ -84,7 +84,7 @@ s4 = polyfit(F,Sed,1);
 slope4=s4(1);
 intercept4=s4(2);
 y_hat4=slope4*F+intercept4;
-figure(3)
+%figure(3)
 %plot (F,Sed,'bo')
 %hold on
 %plot (F,y_hat4,'k-')
@@ -93,7 +93,7 @@ s5 = polyfit(F,TN,1);
 slope5=s5(1);
 intercept5=s5(2);
 y_hat5=slope5*F+intercept5;
-figure(4)
+%figure(4)
 %plot (F,TN,'bo')
 %hold on
 %plot (F,y_hat5,'k-')
@@ -175,11 +175,11 @@ Uc=find(Od1<Ocrit);
 OutF_exe(kk)=length(Uc)/length(Od1);
 end
 %%
-figure(7)
+figure(2)
 plot(1:Ntot+1,Sd)
 hold on
 plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
-figure(10)
+figure(3)
 plot(1:Ntot,Od)
 hold on
 plot (1:Ntot,ones(size(1:Ntot))*(mean(Ih1)))
