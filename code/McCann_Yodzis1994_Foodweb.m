@@ -82,12 +82,18 @@ plot(TotNit,y,'o')
 %% ------- Define carrying capacity and intrinsic production-biomass ratio
 r = 1;
 K = 1;
+
 for i=1:Ntot
     K(i) = slope6*Od(i)+intercept6;
+end
+
+Knorm = K/mean(K);
+
+for i=1:Ntot
     Rn=R(i)/(R(i)+Ro);
     Cn=C(i)/(C(i)+Co);
     %------ Resource budget
-    R(i+1)=R(i)+dt*((r*R(i)*(1-(R(i)/K(i))))-xc*yc*C(i)*Rn);
+    R(i+1)=R(i)+dt*((r*R(i)*(1-(R(i)/Knorm(i))))-xc*yc*C(i)*Rn);
     %------ Consumer budget
     C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn)-xp*yp*P(i)*Cn);
     %------ Predator budget
