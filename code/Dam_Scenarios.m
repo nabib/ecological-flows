@@ -3,17 +3,27 @@
 
 Reservoir_Watershed_Parameters
 
+
 ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
 Sd(1)=0.5*Vcapacity;
 
+figure(15)
+plot(1:Ntot+1, Ih1, 'r')
+
+hold on
+plot(1:Ntot, Od)
 %%
 %Flood Management: If storage exceeds 50% of the dam's capacity, the
 %"spillway" will be released in addition to general outflow. 
 
 Sd_flood(1)=0.5*Vcapacity;
-Qspillway=0;
+frac_gate_normal=0.5;
+frac_gate_max=1;
 for i=1:Ntot
- Qspillway=max(0, Sd_flood(i)-0.5*Vcapacity); %either 0 or volume by which half the capacity is exceeded.
+    Ind_fun=min(floor(Sd_flood(i)/(0.5*Vcapacity)),1);
+    
+ frac_gate=Ind_fun*frac_gate_max+(1-Ind_fun)*frac_gate_normal;
+ [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
  Od_flood(i)=alpha*((Sd_flood(i)+eps))^(beta)+Qspillway; %original outflow plus spillway 
  Sd_flood(i+1)=max(Sd_flood(i)+dt*(Ih1(i)-Od_flood(i)-ET_RES),100*eps);
 end
@@ -23,7 +33,7 @@ plot (1:Ntot+1,Ih1)
 hold on
 plot (1:Ntot,Od)
 
-figure(5) % Storage under flood management scenario (drops immediately)
+figure(5) % Storage under flood management scenario 
 plot (1:Ntot+1,Sd_flood)
 hold on
 plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
@@ -91,3 +101,6 @@ plot (1:10000+1,Sd_min)
 %Seasonal Flow: Seasonal Flow describes high summer- and low winter flows. 
 
 %Managed Natural Variability: 
+
+figure(8)
+plot (t,Ih1)

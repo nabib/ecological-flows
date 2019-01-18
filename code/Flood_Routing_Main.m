@@ -17,7 +17,7 @@ g=9.81;              % Gravitational constant (m/s/s) -stays
 % (https://en.wikipedia.org/wiki/Wheeler_Dam)
 Reservoir_Watershed_Parameters
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Nday=365*200;                   % Number of days to model (d) -stays
+Nday=365*200;                   % Number of days to model (d) -stays (*200)
 dt=0.01;                        % Time increment to compute outflow (d) - stays
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %---- Generate Unit hydrograph (UH) for watershed
