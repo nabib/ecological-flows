@@ -15,7 +15,7 @@ clc
 g=9.81;              % Gravitational constant (m/s/s) -stays
 % ----------- Use geometry of Lake Wheeler dam ----------------------------
 % (https://en.wikipedia.org/wiki/Wheeler_Dam)
-Reservoir_Watershed_Parameters
+Reservoir_Watershed_Parameters;
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Nday=365*200;                   % Number of days to model (d) -stays (*200)
 dt=0.01;                        % Time increment to compute outflow (d) - stays
@@ -24,8 +24,8 @@ dt=0.01;                        % Time increment to compute outflow (d) - stays
 a=3;b=0.5;              % dictate the shape of the UH, a (dim), b (1/d) % do we change these?????
 TTmax=20;               % The maximum extend of the hydrograph duration (d)- stays
 [UH] = Generate_Unit_Hydrograph(a,b,TTmax,dt);
-MM=length(UH); %stays
-Plot_UH %stays
+MM=length(UH);
+%Plot_UH;
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 %---- Generate stats of rainfall (on daily basis-assumed as marked Poisson)
@@ -36,7 +36,7 @@ annual_precip=1200;             % Annual precip. (mm/year)
 % tons/day for sediment, cfs for outflow)
 OutF_model_cfs = [13000 8100 4600 2700 1400 830 420 250 190 155 127 105 81 51 25 13.5];
 % convert Outflow to m3/d
-OutF_model = (OutF_model_cfs * 0.0283168466)*(60*60*24)
+OutF_model = (OutF_model_cfs * 0.0283168466)*(60*60*24);
 Sed_model = [2700000 1600000 820000 425000 185000 93000 39000 19500 13600 10200 7500 5700 3800 1720 325 17.5];
 s1 = polyfit(OutF_model,Sed_model,1);
 slope1=s1(1);
@@ -66,7 +66,7 @@ s2 = polyfit(F,DO,1);
 slope2=s2(1);
 intercept2=s2(2);
 y_hat2=slope2*F+intercept2;
-figure(1)
+%figure(1)
 %plot (F,DO,'bo')
 %hold on
 %plot (F,y_hat2,'k-')
@@ -175,13 +175,13 @@ Uc=find(Od1<Ocrit);
 OutF_exe(kk)=length(Uc)/length(Od1);
 end
 %%
-figure(2)
-plot(1:Ntot+1,Sd)
-hold on
-plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
-figure(3)
-plot(1:Ntot,Od)
-hold on
-plot (1:Ntot,ones(size(1:Ntot))*(mean(Ih1)))
+%figure(2)
+%plot(1:Ntot+1,Sd)
+%hold on
+%plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
+%figure(3)
+%plot(1:Ntot,Od)
+%hold on
+%plot (1:Ntot,ones(size(1:Ntot))*(mean(Ih1)))
 %Plot_OF_ReturnPeriod
 %print -djpeg99 Fig_As50

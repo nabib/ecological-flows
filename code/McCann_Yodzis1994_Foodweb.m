@@ -14,16 +14,17 @@ clear all; clf
 
 %------ Import N,O,P from flow routing model
 Flood_Routing_Main;
+%Dam_Scenarios;
 
 %Data from Roanoke NWIS
 phytopl=csvread('../data/RoanokePhytoplData.csv',1);
 %--- Phytoplankton vs Outflow Regression
 outfl = phytopl(:,1);
 phyt = phytopl(:,6);
-s6 = polyfit(outfl,phyt,1);
-slope6=s6(1);
-intercept6=s6(2);
-y_hat6=slope6*outfl+intercept6;
+%s6 = polyfit(outfl,phyt,1);
+%slope6=s6(1);
+% intercept6=s6(2);
+% y_hat6=slope6*outfl+intercept6;
 figure(1)
 plot (outfl,phyt,'bo')
 hold on
@@ -81,15 +82,15 @@ hold on
 plot(TotNit,y,'o')
 %% ------- Define carrying capacity and intrinsic production-biomass ratio
 r = 1;
-K = 1;
+K(1) = 1;
 
-for i=1:Ntot
-    K(i) = slope6*Od(i)+intercept6;
+for i=1:length(Od1)
+    K(i) = slope6*Od1(i)+intercept6;
 end
 
 Knorm = K/mean(K);
-
-for i=1:Ntot
+% add S - phytoplankton conc/time
+for i=1:length(Od1)
     Rn=R(i)/(R(i)+Ro);
     Cn=C(i)/(C(i)+Co);
     %------ Resource budget
