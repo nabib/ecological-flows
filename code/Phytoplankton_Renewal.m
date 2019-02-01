@@ -12,7 +12,7 @@ uo = [mean(x);1.5;100000];
 beta = nlinfit(x,y,@gamma_dist,uo);
 
 % Fit the distribution
-xx=[1:1:2*max(y)];
+xx=[0:0.1:2*max(Od)];
 yy=gamma_dist(beta,xx);
 
 % Plot the data and distribution
@@ -29,10 +29,12 @@ xxavg=(xx(2:length(xx))+xx(1:length(xx)-1))/2;
 dpdq_q=interp1(xxavg,dpdq,Od,'linear');
 
 %% Calculate dQ/dt
-denom = 1:length(Od);
+denom = (1:length(Od))*dt;
 dqdt = diff(Od)./diff(denom);
-Odavg = (denom(2:length(denom))+denom(1:length(denom)-1))/2;
+Odavg = (Od(2:length(Od))+Od(1:length(Od)-1))/2;
 dqdt_q = interp1(Odavg,dqdt,Od,'linear');
 
 %% Calculate dP/dt
-dpdt = dpdq_q .* dqdt_q;
+dpdt = (dpdq_q .* dqdt_q);
+if_q=find(dpdt<0);
+dpdt(if_q)=0;

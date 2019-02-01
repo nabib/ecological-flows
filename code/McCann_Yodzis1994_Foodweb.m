@@ -50,18 +50,15 @@ K = 1;
 %K(1) = 1;
 
 % Create source vector
-for i=1:length(Od1)
-    %K(i) = slope6*Od1(i)+intercept6;
-    S(i) = dpdt(i);
-end
-
+S = [];
+S=dpdt/mean(dpdt);
 %Knorm = K/mean(K);
 % add S - phytoplankton conc/time
 for i=1:length(Od1)
     Rn=R(i)/(R(i)+Ro);
     Cn=C(i)/(C(i)+Co);
     %------ Resource budget
-    R(i+1)=R(i)+dt*((r*R(i)*(1-(R(i)/K)))-xc*yc*C(i)*Rn) + S(i);
+    R(i+1)=R(i)+dt*((r*R(i)*(1-(R(i)/K)))-xc*yc*C(i)*Rn) + S(i)*dt;
     %------ Consumer budget
     C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn)-xp*yp*P(i)*Cn);
     %------ Predator budget
