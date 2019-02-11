@@ -12,109 +12,45 @@
 %--------------------------------------------------------------------------
 clear all 
 clc
-g=9.81;              % Gravitational constant (m/s/s) -stays
+g=9.81;              % Gravitational constant (m/s/s)
 % ----------- Use geometry of Lake Wheeler dam ----------------------------
 % (https://en.wikipedia.org/wiki/Wheeler_Dam)
-Reservoir_Watershed_Parameters
+Reservoir_Watershed_Parameters;
+%----------------------- Watershed area 
+Area_WS=50;                    % Watershed contributing to inflow (km2)
+%ftp://ftp.odot.state.or.us/techserv/Geo-Environmental/Hydraulics/Hydraulics%20Manual/Chapter_07/Chapter_07_appendix_F/CHAPTER_07_appendix_F.pdf
+C_runoff=0.5;                  % Runoff coefficient, varies with LULC
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-Nday=365*200;                   % Number of days to model (d) -stays (*200)
-dt=0.01;                        % Time increment to compute outflow (d) - stays
+Nday=365*200;                   % Number of days to model (d)(*200)
+dt=0.01;                        % Time increment to compute outflow (d)
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %---- Generate Unit hydrograph (UH) for watershed
-a=3;b=0.5;              % dictate the shape of the UH, a (dim), b (1/d) % do we change these?????
-TTmax=20;               % The maximum extend of the hydrograph duration (d)- stays
+a=3;b=0.5;              % dictate the shape of the UH, a (dim), b (1/d)
+TTmax=20;               % The maximum extend of the hydrograph duration (d)
 [UH] = Generate_Unit_Hydrograph(a,b,TTmax,dt);
-MM=length(UH); %stays
-Plot_UH %stays
+MM=length(UH);
+%Plot_UH;
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 %---- Generate stats of rainfall (on daily basis-assumed as marked Poisson)
-Dur=4/24;                       % Duration of storm (hours per day) %climate change model can feed in 
+Dur=4/24;                       % Duration of storm (hours per day) %climate change model can feed in here
 annual_precip=1200;             % Annual precip. (mm/year)
-
-% --- compute sediment outflow relationship downstream from dam (units =
-% tons/day for sediment, cfs for outflow)
-OutF_model_cfs = [13000 8100 4600 2700 1400 830 420 250 190 155 127 105 81 51 25 13.5];
-% convert Outflow to m3/d
-OutF_model = (OutF_model_cfs * 0.0283168466)*(60*60*24)
-Sed_model = [2700000 1600000 820000 425000 185000 93000 39000 19500 13600 10200 7500 5700 3800 1720 325 17.5];
-s1 = polyfit(OutF_model,Sed_model,1);
-slope1=s1(1);
-intercept1=s1(2);
-y_hat1=slope1*OutF_model+intercept1;
-%plot (OutF_model,Sed_model,'bo')
-%hold on
-%plot (OutF_model,y_hat1,'k-')
-
-%% Compute nutrient outflow relationship downstream from dam (TN, P, DO, Sed)
-%Data from Roanoke NWIS
-A=load('nutrients.txt');
-%--- Outflow (F)
-F=A(:,1);
-%--- Dissolved Oxygen (DO)
-DO=A(:,2);
-%--- Phosphorus (P)
-P=A(:,3);
-%--- Suspended Sediment (Sed)
-Sed=A(:,4);
-%--- Total Nitrogen (TN)
-TN=A(:,5);
-
-%% Linear Regression Regressions
-% DO
-s2 = polyfit(F,DO,1);
-slope2=s2(1);
-intercept2=s2(2);
-y_hat2=slope2*F+intercept2;
-figure(1)
-%plot (F,DO,'bo')
-%hold on
-%plot (F,y_hat2,'k-')
-% P
-s3 = polyfit(F,P,1);
-slope3=s3(1);
-intercept3=s3(2);
-y_hat3=slope3*F+intercept3;
-%figure(2)
-%plot (F,P,'bo')
-%hold on
-%plot (F,y_hat3,'k-')
-% Sed
-s4 = polyfit(F,Sed,1);
-slope4=s4(1);
-intercept4=s4(2);
-y_hat4=slope4*F+intercept4;
-%figure(3)
-%plot (F,Sed,'bo')
-%hold on
-%plot (F,y_hat4,'k-')
-% TN
-s5 = polyfit(F,TN,1);
-slope5=s5(1);
-intercept5=s5(2);
-y_hat5=slope5*F+intercept5;
-%figure(4)
-%plot (F,TN,'bo')
-%hold on
-%plot (F,y_hat5,'k-')
-
-%%
 
 %--- Loop over return period of daily rainfall
 for kk=1:2 %why 29?
 Ret_P(kk)=kk+1; %stays
-freq=1/(Ret_P(kk));             % Return frequency between days (1/d %stays
- 
-dep=(annual_precip/365)/freq;   % Expected water depth (mm) %stays ----ask gaby
+freq=1/(Ret_P(kk));             % Return frequency between days (1/d)
+
+dep=(annual_precip/365)/freq;   % Expected water depth (mm)
 P=[];
 [P] = Precip_generate_series(freq,dep,Dur,Nday,dt);
-Ntot=length(P); %stays
+Ntot=length(P);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %---- Assume PET
 PET = 0;                        % ET losses from reservoir (mm/d) factor in ET at some point
 %---- Convert rainfall to inflow using the unit hydrograph and runoff coef.
-Factor=C_runoff*(Area_WS*(1000*1000))*((1/Dur)*(0.001)); %stays
-Ids_F=Factor*conv(P,UH);    % Determine inflow from convolution of P and UH %stays
+Factor=C_runoff*(Area_WS*(1000*1000))*((1/Dur)*(0.001));
+Ids_F=Factor*conv(P,UH);    % Determine inflow from convolution of P and UH
 Ih1=[];
 Ih1=Ids_F(1:Ntot+1);        % This is the inflow in m3/d
 t=[0:1:Ntot]*dt;
@@ -131,16 +67,16 @@ for i=1:Ntot
   Od(i)=alpha*((Sd(i)+eps))^(beta); %storage outflow relationship
 %--- This is the mass balance equation:dS/dt = I - (S/alpha)^(1/beta)-ET 
   Sd(i+1)=max(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES),100*eps);
-  %Od
+  
+  % -------Od - update with nutrient regressions script ------
   %--- Compute sediment amount given outflow
-  Sed(i) = slope1*Od(i) + intercept1;
+  %Sed(i) = slope1*Od(i) + intercept1;
   %--- Compute TN given outflow
-  TNi(i) = slope5*Od(i) + intercept5;
+  %TNi(i) = slope5*Od(i) + intercept5;
   %--- Compute P given outflow
-  Ph(i) = slope3*Od(i) + intercept3;
+  %Ph(i) = slope3*Od(i) + intercept3;
   %--- Compute DO given outflow
-  dO(i) = slope2*Od(i) + intercept2;
-
+  %dO(i) = slope2*Od(i) + intercept2;
 end
 %%
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -175,13 +111,13 @@ Uc=find(Od1<Ocrit);
 OutF_exe(kk)=length(Uc)/length(Od1);
 end
 %%
-figure(2)
-plot(1:Ntot+1,Sd)
-hold on
-plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
-figure(3)
-plot(1:Ntot,Od)
-hold on
-plot (1:Ntot,ones(size(1:Ntot))*(mean(Ih1)))
+%figure(2)
+%plot(1:Ntot+1,Sd)
+%hold on
+%plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
+%figure(3)
+%plot(1:Ntot,Od)
+%hold on
+%plot (1:Ntot,ones(size(1:Ntot))*(mean(Ih1)))
 %Plot_OF_ReturnPeriod
 %print -djpeg99 Fig_As50
