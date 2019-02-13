@@ -12,9 +12,31 @@ plot(1:Ntot+1, Ih1, 'r')
 
 hold on
 plot(1:Ntot, Od)
+
+%%
+%%
+%Regular Dam Scenario
+%C=nutrient loss (unit/m^3)
+%C_in=nutrient inflow constant (unit/m^3) 
+%k=nutrient decay rate (1/t)
+C_in=0.9; %mg/l
+k=0.001;
+C(1)=0.9;
+
+Sd(1)=0.5*Vcapacity;
+frac_gate=0.7;
+[alpha,beta]=Parameters_Gate_Regulation(frac_gate);
+
+for i=1:Ntot
+ Od(i)=alpha*((Sd(i)+eps))^(beta); 
+ Sd(i+1)=(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES));
+ C(i+1)=(Sd(i)*C(i)+dt*(Ih1(i)*C_in-Od(i)*C(i)-k*C(i)))/Sd(i+1);
+end
+
 %%
 %Flood Management: If storage exceeds 50% of the dam's capacity, the
 %"spillway" will be released in addition to general outflow. 
+
 
 Sd_flood(1)=0.5*Vcapacity;
 frac_gate_normal=0.5;
@@ -24,8 +46,9 @@ for i=1:Ntot
     
  frac_gate=Ind_fun*frac_gate_max+(1-Ind_fun)*frac_gate_normal;
  [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
- Od_flood(i)=alpha*((Sd_flood(i)+eps))^(beta)+Qspillway; %original outflow plus spillway 
+ Od_flood(i)=alpha*((Sd_flood(i)+eps))^(beta); 
  Sd_flood(i+1)=max(Sd_flood(i)+dt*(Ih1(i)-Od_flood(i)-ET_RES),100*eps);
+ 
 end
 
 figure(4) % Inflow and Outflow under flood management scenario
