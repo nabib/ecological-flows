@@ -22,7 +22,7 @@ Area_WS=50;                    % Watershed contributing to inflow (km2)
 C_runoff=0.5;                  % Runoff coefficient, varies with LULC
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 Nday=365*200;                   % Number of days to model (d)(*200)
-dt=0.01;                        % Time increment to compute outflow (d)
+dt=0.01;                        % Time increment to compute outflow (d) 36sec
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %---- Generate Unit hydrograph (UH) for watershed
 a=3;b=0.5;              % dictate the shape of the UH, a (dim), b (1/d)
