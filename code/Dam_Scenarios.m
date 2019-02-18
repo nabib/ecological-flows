@@ -19,18 +19,23 @@ plot(1:Ntot, Od)
 %C=nutrient loss (unit/m^3)
 %C_in=nutrient inflow constant (unit/m^3) 
 %k=nutrient decay rate (1/t)
-C_in=0.9; %mg/l
-k=0.001;
-C(1)=0.9;
+C_bg=0.6; %mg/l
+C(1)=C_bg;
+C_in_bg=.9;
+k=.001;
+C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %if Ih dev from mean is higher 5*std
+
 
 Sd(1)=0.5*Vcapacity;
 frac_gate=0.7;
 [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
 
+
 for i=1:Ntot
  Od(i)=alpha*((Sd(i)+eps))^(beta); 
  Sd(i+1)=(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES));
- C(i+1)=(Sd(i)*C(i)+dt*(Ih1(i)*C_in-Od(i)*C(i)-k*C(i)))/Sd(i+1);
+ C_in=(1-C_ind(i))*C_in_bg; %high inflow generates washout
+ C(i+1)=(Sd(i)*C(i))/Sd(i+1)+dt*(((Ih1(i)*C_in-Od(i)*C(i)-Sd(i)*k*C(i))/Sd(i+1)));
 end
 
 %%
