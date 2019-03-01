@@ -1,8 +1,7 @@
 %Different Dam Management Scenarios
 
 
-Reservoir_Watershed_Parameters
-Flood_Routing_Main
+Flood_Routing_Main;
 
 ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
 Sd(1)=0.5*Vcapacity;
@@ -30,8 +29,29 @@ for i=1:Ntot
  C(i+1)=(Sd(i)*C(i))/Sd(i+1)+dt*(((Ih1(i)*C_in-Od(i)*C(i)-Sd(i)*k*C(i))/Sd(i+1)));
 end
 
-plot(C)
-plot(C(1:Ntot),Od)
+figure (1)
+plot(Ih1)
+xlabel('dt')
+ylabel('Inflow (m^3/dt)')
+title('Run-of-River')
+
+figure (2)
+plot(Od)
+xlabel('dt')
+ylabel('Outflow (m^3/dt)')
+title('Run-of-River')
+
+figure (3)
+plot(Sd)
+xlabel('dt')
+ylabel('Storage (m^3)')
+title('Run-of-River')
+
+figure (4)
+plot(Od, C(1:Ntot))
+xlabel('Outflow (m^3/dt)')
+ylabel('Nutrients (unit/m^3)')
+title('Run-of-River')
 
 %% Flood Management
 
@@ -62,18 +82,25 @@ for i=1:Ntot
 
 end
 
-%figure(4) % Inflow and Outflow under flood management scenario
-%plot (1:Ntot+1,Ih1)
-%hold on
-%plot (1:Ntot,Od)
+figure (5)
+plot(Od_flood)
+xlabel('dt')
+ylabel('Outflow (m^3/dt)')
+title('Flood Management')
 
-figure(5) % Storage under flood management scenario 
-plot (1:Ntot+1,Sd_flood)
+figure (6)
+plot(Sd_flood)
+xlabel('dt')
+ylabel('Storage (m^3)')
+title('Flood Management')
 hold on
 plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
 
-plot(C_flood)
-plot(C_flood(1:Ntot),Od_flood)
+figure (7)
+plot(Od_flood, C_flood(1:Ntot))
+xlabel('Outflow (m^3/dt)')
+ylabel('Nutrients (unit/m^3)')
+title('Flood Management')
 
 %% Drought Management
 
@@ -105,11 +132,25 @@ Sd_drought(i+1)=max(Sd_drought(i)+dt*(Ih1(i)-Od_drought(i)-ET_RES),100*eps);
 
 end
 
-figure(6) % Storage under drought management scenario (why slightly below .5 capacity?)
-plot (1:Ntot+1,Sd_drought)
+figure (8)
+plot(Od_drought)
+xlabel('dt')
+ylabel('Outflow (m^3/dt)')
+title('Drought Management')
+
+figure (9)
+plot(Sd_drought)
+xlabel('dt')
+ylabel('Storage (m^3)')
+title('Drought Management')
 hold on
 plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
 
+figure (10)
+plot(Od_drought, C_drought(1:Ntot))
+xlabel('Outflow (m^3/dt)')
+ylabel('Nutrients (unit/m^3)')
+title('Drought Management')
 
 %% Natural Variability: Outflow equals Inflow.
 
@@ -117,18 +158,38 @@ Sd_natvar(1:Ntot+1)=0;
 Od_natvar=Ih1;
 
 %Nutrient parameters:
-C_bg=0.6; %mg/m^3
-C_natvar=C_bg;
+C_bg=0.6; %mg/l
+C_natvar(1)=C_bg;
+C_in_bg=.9;
+k=0;
+C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %Washout
+
+%Nutrient parameters: washout yes, k no
+for i=1:Ntot
+ C_in=(1-C_ind(i))*C_in_bg; %high inflow generates washout
+ C_natvar(i+1)=C_in;
+end
 
 
-%% Minimum Flow ??
+figure (11)
+plot(Od_natvar)
+xlabel('dt')
+ylabel('Outflow (m^3/dt)')
+title('Natural Variability')
+
+figure (13)
+plot(Od_natvar(1:Ntot), C_natvar(1:Ntot))
+xlabel('Outflow (m^3/dt)')
+ylabel('Nutrients (unit/m^3)')
+title('Natural Variability')
+%% Minimum Flow
 
 %If outflow is less than min. flow, gates are opened to frac_gate_max.
 
 Sd_minflo(1)=0.5*Vcapacity;
-frac_gate_normal=0.5;
-frac_gate=0.5;
-frac_gate_max=1;
+frac_gate_normal=0.6;
+frac_gate=0.6;
+frac_gate_max=0.8;
 
 %Nutrient parameters:
 C_bg=0.6; %mg/l
@@ -137,13 +198,18 @@ C_in_bg=.9;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
+Ih_mean=mean(Ih1);
+lag=floor(10/dt);
 for i=1:Ntot
     
  [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
  Od_minflo(i)=alpha*((Sd_minflo(i)+eps))^(beta); 
  Sd_minflo(i+1)=max(Sd_minflo(i)+dt*(Ih1(i)-Od_minflo(i)-ET_RES),100*eps);
  
- Ind_fun(i)=min(floor(Od_minflo(i)/(400000)),1); %below 400000 = 0, above = 1
+ ind_min_flo=1-min(floor(i/lag),1);
+ Od_min_lag=[];
+ Od_min_lag=mean(Od_minflo((i+(ind_min_flo*lag))-(lag-1):i));
+ Ind_fun(i)=min(floor(Od_min_lag/(Ih_mean)),1);
  frac_gate=Ind_fun(i)*frac_gate_normal+(1-Ind_fun(i))*frac_gate_max; %either general or flood management
 
  C_in_minflo=(1-C_ind(i))*C_in_bg; %high inflow generates washout
@@ -151,12 +217,37 @@ for i=1:Ntot
 
 end
 
+%yy1= smooth(Od_minflo,C_minflo(1:Ntot), 0.1, 'loess') smooth
+figure (14)
+plot(Od_minflo)
+xlabel('dt')
+ylabel('Outflow (m^3/dt)')
+title('Minimum Flow')
+axis([1 Ntot 0 600000]);
+%hold on
+%plot (1:Ntot+1,ones(size(1:Ntot+1))*(400000))
 
+%figure (15)
+%plot(Sd_minflo)
+%xlabel('dt')
+%ylabel('Storage (m^3)')
+%title('Minimum Flow')
+
+%figure (20)
+%plot(Ih1)
+%hold on 
+%plot(Od_minflo)
+
+%figure (16)
+%plot(Od_minflo, C_minflo(1:Ntot))
+%xlabel('Outflow (m^3/dt)')
+%ylabel('Nutrients (unit/m^3)')
+%title('Minimum Flow')
 %% Compare Outflows
 
-figure(8)
-plot (1:Ntot+1,Od_natvar)
-hold on 
-plot (1:Ntot,Od_drought)
-hold on
-plot (1:Ntot,Od_flood)
+%figure(8)
+%plot (1:Ntot+1,Od_natvar)
+%hold on 
+%plot (1:Ntot,Od_drought)
+%hold on
+%plot (1:Ntot,Od_flood)
