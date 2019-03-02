@@ -10,9 +10,9 @@ Sd(1)=0.5*Vcapacity;
 %C=nutrient loss (unit/m^3)
 %C_in=nutrient inflow constant (unit/m^3) 
 %k=nutrient decay rate (1/t)
-C_bg=0.6; %mg/l
+C_bg=3; %mg/l
 C(1)=C_bg;
-C_in_bg=.9;
+C_in_bg=6;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %if Ih dev from mean is higher 5*std
 
@@ -63,9 +63,9 @@ frac_gate_normal=0.5;
 frac_gate_max=1;
 
 %Nutrient parameters:
-C_bg=0.6; %mg/l
+C_bg=3; %mg/l
 C_flood(1)=C_bg;
-C_in_bg=.9;
+C_in_bg=6;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
@@ -111,9 +111,9 @@ frac_gate_normal=0.7;
 frac_gate_min=0;
 
 %Nutrient parameters:
-C_bg=0.6; %mg/l
+C_bg=3; %mg/l
 C_drought(1)=C_bg;
-C_in_bg=.9;
+C_in_bg=6;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
@@ -158,9 +158,9 @@ Sd_natvar(1:Ntot+1)=0;
 Od_natvar=Ih1;
 
 %Nutrient parameters:
-C_bg=0.6; %mg/l
+C_bg=3; %mg/l
 C_natvar(1)=C_bg;
-C_in_bg=.9;
+C_in_bg=6;
 k=0;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %Washout
 
@@ -192,9 +192,9 @@ frac_gate=0.6;
 frac_gate_max=0.8;
 
 %Nutrient parameters:
-C_bg=0.6; %mg/l
+C_bg=3; %mg/l
 C_minflo(1)=C_bg;
-C_in_bg=.9;
+C_in_bg=6;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
