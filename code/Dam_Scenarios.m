@@ -10,9 +10,9 @@ Sd(1)=0.5*Vcapacity;
 %C=nutrient loss (unit/m^3)
 %C_in=nutrient inflow constant (unit/m^3) 
 %k=nutrient decay rate (1/t)
-C_bg=3; %mg/l
+C_bg=0.3; %mg/l
 C(1)=C_bg;
-C_in_bg=6;
+C_in_bg=0.6;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %if Ih dev from mean is higher 5*std
 
@@ -29,29 +29,29 @@ for i=1:Ntot
  C(i+1)=(Sd(i)*C(i))/Sd(i+1)+dt*(((Ih1(i)*C_in-Od(i)*C(i)-Sd(i)*k*C(i))/Sd(i+1)));
 end
 
-figure (1)
-plot(Ih1)
-xlabel('dt')
-ylabel('Inflow (m^3/dt)')
-title('Run-of-River')
-
-figure (2)
-plot(Od)
-xlabel('dt')
-ylabel('Outflow (m^3/dt)')
-title('Run-of-River')
-
-figure (3)
-plot(Sd)
-xlabel('dt')
-ylabel('Storage (m^3)')
-title('Run-of-River')
-
-figure (4)
-plot(Od, C(1:Ntot))
-xlabel('Outflow (m^3/dt)')
-ylabel('Nutrients (unit/m^3)')
-title('Run-of-River')
+% figure (1)
+% plot(Ih1)
+% xlabel('dt')
+% ylabel('Inflow (m^3/dt)')
+% title('Run-of-River')
+% 
+% figure (2)
+% plot(Od)
+% xlabel('dt')
+% ylabel('Outflow (m^3/dt)')
+% title('Run-of-River')
+% 
+% figure (3)
+% plot(Sd)
+% xlabel('dt')
+% ylabel('Storage (m^3)')
+% title('Run-of-River')
+% 
+% figure (4)
+% plot(Od, C(1:Ntot))
+% xlabel('Outflow (m^3/dt)')
+% ylabel('Nutrients (unit/m^3)')
+% title('Run-of-River')
 
 %% Flood Management
 
@@ -63,9 +63,9 @@ frac_gate_normal=0.5;
 frac_gate_max=1;
 
 %Nutrient parameters:
-C_bg=3; %mg/l
+C_bg=0.3; %mg/l
 C_flood(1)=C_bg;
-C_in_bg=6;
+C_in_bg=0.6;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
@@ -82,25 +82,25 @@ for i=1:Ntot
 
 end
 
-figure (5)
-plot(Od_flood)
-xlabel('dt')
-ylabel('Outflow (m^3/dt)')
-title('Flood Management')
-
-figure (6)
-plot(Sd_flood)
-xlabel('dt')
-ylabel('Storage (m^3)')
-title('Flood Management')
-hold on
-plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
-
-figure (7)
-plot(Od_flood, C_flood(1:Ntot))
-xlabel('Outflow (m^3/dt)')
-ylabel('Nutrients (unit/m^3)')
-title('Flood Management')
+% figure (5)
+% plot(Od_flood)
+% xlabel('dt')
+% ylabel('Outflow (m^3/dt)')
+% title('Flood Management')
+% 
+% figure (6)
+% plot(Sd_flood)
+% xlabel('dt')
+% ylabel('Storage (m^3)')
+% title('Flood Management')
+% hold on
+% plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
+% 
+% figure (7)
+% plot(Od_flood, C_flood(1:Ntot))
+% xlabel('Outflow (m^3/dt)')
+% ylabel('Nutrients (unit/m^3)')
+% title('Flood Management')
 
 %% Drought Management
 
@@ -111,9 +111,9 @@ frac_gate_normal=0.7;
 frac_gate_min=0;
 
 %Nutrient parameters:
-C_bg=3; %mg/l
+C_bg=0.3; %mg/l
 C_drought(1)=C_bg;
-C_in_bg=6;
+C_in_bg=0.6;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
@@ -132,25 +132,25 @@ Sd_drought(i+1)=max(Sd_drought(i)+dt*(Ih1(i)-Od_drought(i)-ET_RES),100*eps);
 
 end
 
-figure (8)
-plot(Od_drought)
-xlabel('dt')
-ylabel('Outflow (m^3/dt)')
-title('Drought Management')
-
-figure (9)
-plot(Sd_drought)
-xlabel('dt')
-ylabel('Storage (m^3)')
-title('Drought Management')
-hold on
-plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
-
-figure (10)
-plot(Od_drought, C_drought(1:Ntot))
-xlabel('Outflow (m^3/dt)')
-ylabel('Nutrients (unit/m^3)')
-title('Drought Management')
+% figure (8)
+% plot(Od_drought)
+% xlabel('dt')
+% ylabel('Outflow (m^3/dt)')
+% title('Drought Management')
+% 
+% figure (9)
+% plot(Sd_drought)
+% xlabel('dt')
+% ylabel('Storage (m^3)')
+% title('Drought Management')
+% hold on
+% plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
+% 
+% figure (10)
+% plot(Od_drought, C_drought(1:Ntot))
+% xlabel('Outflow (m^3/dt)')
+% ylabel('Nutrients (unit/m^3)')
+% title('Drought Management')
 
 %% Natural Variability: Outflow equals Inflow.
 
@@ -158,9 +158,9 @@ Sd_natvar(1:Ntot+1)=0;
 Od_natvar=Ih1;
 
 %Nutrient parameters:
-C_bg=3; %mg/l
+C_bg=0.3; %mg/l
 C_natvar(1)=C_bg;
-C_in_bg=6;
+C_in_bg=0.6;
 k=0;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %Washout
 
@@ -171,17 +171,17 @@ for i=1:Ntot
 end
 
 
-figure (11)
-plot(Od_natvar)
-xlabel('dt')
-ylabel('Outflow (m^3/dt)')
-title('Natural Variability')
-
-figure (13)
-plot(Od_natvar(1:Ntot), C_natvar(1:Ntot))
-xlabel('Outflow (m^3/dt)')
-ylabel('Nutrients (unit/m^3)')
-title('Natural Variability')
+% figure (11)
+% plot(Od_natvar)
+% xlabel('dt')
+% ylabel('Outflow (m^3/dt)')
+% title('Natural Variability')
+% 
+% figure (13)
+% plot(Od_natvar(1:Ntot), C_natvar(1:Ntot))
+% xlabel('Outflow (m^3/dt)')
+% ylabel('Nutrients (unit/m^3)')
+% title('Natural Variability')
 %% Minimum Flow
 
 %If outflow is less than min. flow, gates are opened to frac_gate_max.
@@ -192,9 +192,9 @@ frac_gate=0.6;
 frac_gate_max=0.8;
 
 %Nutrient parameters:
-C_bg=3; %mg/l
+C_bg=0.3; %mg/l
 C_minflo(1)=C_bg;
-C_in_bg=6;
+C_in_bg=0.6;
 k=.001;
 C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
@@ -218,12 +218,12 @@ for i=1:Ntot
 end
 
 %yy1= smooth(Od_minflo,C_minflo(1:Ntot), 0.1, 'loess') smooth
-figure (14)
-plot(Od_minflo)
-xlabel('dt')
-ylabel('Outflow (m^3/dt)')
-title('Minimum Flow')
-axis([1 Ntot 0 600000]);
+% figure (14)
+% plot(Od_minflo)
+% xlabel('dt')
+% ylabel('Outflow (m^3/dt)')
+% title('Minimum Flow')
+% axis([1 Ntot 0 600000]);
 %hold on
 %plot (1:Ntot+1,ones(size(1:Ntot+1))*(400000))
 
