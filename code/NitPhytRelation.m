@@ -1,6 +1,11 @@
-clc; clear all
-
-Dam_Scenarios;
+%--------------------------------------------------------------------------
+%NitPhytRelation.m: Derives downstream nitrate concentration given an
+%                   outflow time series from the reservoir.
+%
+%Authors: Nicole Abib
+%
+%Date: 3/18/2019
+%--------------------------------------------------------------------------
 
 %% Regular Dam Scenario
 nitrate = C;
@@ -58,8 +63,8 @@ phi2 = -45.14348;
 phi3 = 185.6056;
 x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
-min(nitrate)
-max(nitrate)
+min(nitrate);
+max(nitrate);
 
 subplot(2,3,4)
 %figure(4)

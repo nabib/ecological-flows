@@ -1,6 +1,11 @@
-%Different Dam Management Scenarios
-
-
+%--------------------------------------------------------------------------
+%Dam_Scenarios.m: Determines inflow, storage, outflow, nutrient
+%                   relationships for 5 different dam management scenarios
+%
+%Authors: Sophie Erfurth, Gaby Katul, Hannah Doherty, and Mary Tchamkina
+%
+%Date: 3/25/2016
+%--------------------------------------------------------------------------
 Flood_Routing_Main;
 
 ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)

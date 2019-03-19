@@ -3,7 +3,7 @@
 %                     functional response (R=Resource, C = Consumer, 
 %                     P = Predator).
 %
-%Authors: Gaby Katul, Hannah Doherty, and Mary Tchamkina
+%Authors: Nicole Abib, Gaby Katul, Hannah Doherty, and Mary Tchamkina
 %
 %Date: 3/25/2016
 %
@@ -13,25 +13,9 @@
 %clear all; clf
 
 %------ Import N,O,P from flow routing model
-%NitPhytRelation
-%Dam_Scenarios;
-
-%Data from Roanoke NWIS
-%phytopl=csvread('../data/RoanokePhytoplData.csv',1);
-%--- Phytoplankton vs Outflow Regression
-%outfl = phytopl(:,1);
-%phyt = phytopl(:,6);
-%s6 = polyfit(outfl,phyt,1);
-%slope6=s6(1);
-% intercept6=s6(2);
-% y_hat6=slope6*outfl+intercept6;
-%figure(1)
-%plot (outfl,phyt,'bo')
-%hold on
-%plot(outfl,y_hat6,'k-')
-
-%------ Build relationship between N,P and ingestion
-%------ Build relationship between O and ingestion
+Dam_Scenarios
+NitPhytRelation
+OutPhytRelation
 
 xc=0.056; xp=0.01; yc=2.01; yp=5;Ro=0.161; Co=0.5;
 
@@ -55,11 +39,12 @@ phyt_max = (phi1./(1+exp(-(phi2+phi3.*C_in))));
 K_phyt = phyt_calc/phyt_max;
 MMn=length(Od_natvar);
 dt=0.01;
-for i=1:MMn
+for i=1:MMn-1
     Rn(i)=R(i)/(R(i)+Ro);
     Cn(i)=C(i)/(C(i)+Co);
     %------ Resource budget
-    R(i+1)=max(0,R(i)+dt*(R(i)*(K_phyt(i)-R(i))-xc*yc*C(i)*Rn(i)));
+    R(i+1)=max(0,R(i)+dt*(R(i)*(K_phyt(i)-R(i))-(xc*yc*C(i)*Rn(i))/y_norm(i)));
+    %R(i+1)=max(0,R(i)+dt*(R(i)*(K_phyt(i)-R(i))-(xc*yc*C(i)*Rn(i))));
     %R(i+1)=phyt(i)+dt*(phyt(i)*(1-phyt(i))-xc*yc*C(i)*Rn);
     %------ Consumer budget
     C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn(i))-xp*yp*P(i)*Cn(i));
