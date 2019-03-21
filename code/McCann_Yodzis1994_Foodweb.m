@@ -10,7 +10,7 @@
 %Reference: McCann, K. and P. Yodzis, 1994, Biological conditions for choas
 %           in a three species food chain, Ecology, 75(2), 561-564.
 %--------------------------------------------------------------------------
-%clear all; clf
+clear all; clf
 
 %------ Import N,O,P from flow routing model
 Dam_Scenarios
@@ -43,24 +43,12 @@ for i=1:MMn-1
     Rn(i)=R(i)/(R(i)+Ro);
     Cn(i)=C(i)/(C(i)+Co);
     %------ Resource budget
-    R(i+1)=max(0,R(i)+dt*(R(i)*(K_phyt(i)-R(i))-(xc*yc*C(i)*Rn(i))/y_norm(i)));
-    %R(i+1)=max(0,R(i)+dt*(R(i)*(K_phyt(i)-R(i))-(xc*yc*C(i)*Rn(i))));
-    %R(i+1)=phyt(i)+dt*(phyt(i)*(1-phyt(i))-xc*yc*C(i)*Rn);
+    R(i+1)=max(0,R(i)+dt*(R(i)*(K_phyt(i)-R(i))-(xc*yc*C(i)*Rn(i))/y_minflo_norm(i)));
     %------ Consumer budget
-    C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn(i))-xp*yp*P(i)*Cn(i));
+    C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn(i))-((xp*yp*P(i)*Cn(i))/y_norm(i)));
     %------ Predator budget
     P(i+1)=P(i)+dt*(xp*P(i)*(-1+yp*Cn(i)));
     t(i+1)=t(i)+dt;
-    
-%     Rn=R(i)/(R(i)+Ro);
-%     Cn=C(i)/(C(i)+Co);
-%     %------ Resource budget
-%     R(i+1)=R(i)+dt*(R(i)*(1-R(i))-xc*yc*C(i)*Rn);
-%     %------ Consumer budget
-%     C(i+1)=C(i)+dt*(xc*C(i)*(-1+yc*Rn)-xp*yp*P(i)*Cn);
-%     %------ Predator budget
-%     P(i+1)=P(i)+dt*(xp*P(i)*(-1+yp*Cn));
-%     t(i+1)=t(i)+dt;
 end
 
 figure(1)

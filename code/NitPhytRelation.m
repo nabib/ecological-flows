@@ -29,7 +29,7 @@ nitrate = C_flood;
 phi1 = 3284.239;
 phi2 = -45.14348;
 phi3 = 185.6056;
-x = [min(nitrate):0.001:max(nitrate)];
+x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
 min(nitrate)
 max(nitrate)
@@ -45,7 +45,7 @@ nitrate = C_drought;
 phi1 = 3284.239;
 phi2 = -45.14348;
 phi3 = 185.6056;
-x = [min(nitrate):0.001:max(nitrate)];
+x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
 min(nitrate)
 max(nitrate)
@@ -77,7 +77,7 @@ nitrate = C_minflo;
 phi1 = 3284.239;
 phi2 = -45.14348;
 phi3 = 185.6056;
-x = [min(nitrate):0.001:max(nitrate)];
+x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
 min(nitrate)
 max(nitrate)

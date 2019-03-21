@@ -10,6 +10,7 @@ Flood_Routing_Main;
 
 ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
 Sd(1)=0.5*Vcapacity;
+baseflow = 0.1*max(Ih1);
 
 %% Regular Dam Scenario
 %C=nutrient loss (unit/m^3)
@@ -28,10 +29,10 @@ frac_gate=0.7;
 
 
 for i=1:Ntot
- Od(i)=alpha*((Sd(i)+eps))^(beta); 
- Sd(i+1)=(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES));
- C_in=(1-C_ind(i))*C_in_bg; %high inflow generates washout
- C(i+1)=(Sd(i)*C(i))/Sd(i+1)+dt*(((Ih1(i)*C_in-Od(i)*C(i)-Sd(i)*k*C(i))/Sd(i+1)));
+    Od(i)=alpha*((Sd(i)+eps))^(beta) + baseflow; 
+    Sd(i+1)=(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES));
+    C_in=(1-C_ind(i))*C_in_bg; %high inflow generates washout
+    C(i+1)=(Sd(i)*C(i))/Sd(i+1)+dt*(((Ih1(i)*C_in-Od(i)*C(i)-Sd(i)*k*C(i))/Sd(i+1)));
 end
 
 % figure (1)
@@ -77,13 +78,13 @@ C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2;
 for i=1:Ntot
     Ind_fun=min(floor(Sd_flood(i)/(0.5*Vcapacity)),1); %below 50% = 0, above = 1
     
- frac_gate=Ind_fun*frac_gate_max+(1-Ind_fun)*frac_gate_normal; %either general or flood management
- [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
- Od_flood(i)=alpha*((Sd_flood(i)+eps))^(beta); 
- Sd_flood(i+1)=max(Sd_flood(i)+dt*(Ih1(i)-Od_flood(i)-ET_RES),100*eps);
+    frac_gate=Ind_fun*frac_gate_max+(1-Ind_fun)*frac_gate_normal; %either general or flood management
+    [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
+    Od_flood(i)=alpha*((Sd_flood(i)+eps))^(beta) + baseflow; 
+    Sd_flood(i+1)=max(Sd_flood(i)+dt*(Ih1(i)-Od_flood(i)-ET_RES),100*eps);
  
- C_in_flood=(1-C_ind(i))*C_in_bg; %high inflow generates washout
- C_flood(i+1)=(Sd_flood(i)*C_flood(i))/Sd_flood(i+1)+dt*(((Ih1(i)*C_in_flood-Od_flood(i)*C_flood(i)-Sd_flood(i)*k*C_flood(i))/Sd_flood(i+1)));
+    C_in_flood=(1-C_ind(i))*C_in_bg; %high inflow generates washout
+    C_flood(i+1)=(Sd_flood(i)*C_flood(i))/Sd_flood(i+1)+dt*(((Ih1(i)*C_in_flood-Od_flood(i)*C_flood(i)-Sd_flood(i)*k*C_flood(i))/Sd_flood(i+1)));
 
 end
 
@@ -126,14 +127,14 @@ for i=1:Ntot
  
     Ind_fun=min(floor(Sd_drought(i)/(0.5*Vcapacity)),1); %below 50% = 0, above = 1
     
- frac_gate=Ind_fun*frac_gate_normal+(1-Ind_fun)*frac_gate_min; %either general or drought management
- [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
+    frac_gate=Ind_fun*frac_gate_normal+(1-Ind_fun)*frac_gate_min; %either general or drought management
+    [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
 
-Od_drought(i)=alpha*((Sd_drought(i)+eps))^(beta); 
-Sd_drought(i+1)=max(Sd_drought(i)+dt*(Ih1(i)-Od_drought(i)-ET_RES),100*eps);
+    Od_drought(i)=alpha*((Sd_drought(i)+eps))^(beta) + baseflow; 
+    Sd_drought(i+1)=max(Sd_drought(i)+dt*(Ih1(i)-Od_drought(i)-ET_RES),100*eps);
 
- C_in_drought=(1-C_ind(i))*C_in_bg; %high inflow generates washout
- C_drought(i+1)=(Sd_drought(i)*C_drought(i))/Sd_drought(i+1)+dt*(((Ih1(i)*C_in_drought-Od_drought(i)*C_drought(i)-Sd_drought(i)*k*C_drought(i))/Sd_drought(i+1)));
+    C_in_drought=(1-C_ind(i))*C_in_bg; %high inflow generates washout
+    C_drought(i+1)=(Sd_drought(i)*C_drought(i))/Sd_drought(i+1)+dt*(((Ih1(i)*C_in_drought-Od_drought(i)*C_drought(i)-Sd_drought(i)*k*C_drought(i))/Sd_drought(i+1)));
 
 end
 
@@ -160,7 +161,7 @@ end
 %% Natural Variability: Outflow equals Inflow.
 
 Sd_natvar(1:Ntot+1)=0;
-Od_natvar=Ih1;
+Od_natvar=Ih1 + baseflow;
 
 %Nutrient parameters:
 C_bg=0.3; %mg/l
@@ -206,19 +207,18 @@ C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2;
 Ih_mean=mean(Ih1);
 lag=floor(10/dt);
 for i=1:Ntot
-    
- [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
- Od_minflo(i)=alpha*((Sd_minflo(i)+eps))^(beta); 
- Sd_minflo(i+1)=max(Sd_minflo(i)+dt*(Ih1(i)-Od_minflo(i)-ET_RES),100*eps);
+    [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
+    Od_minflo(i)=alpha*((Sd_minflo(i)+eps))^(beta) + baseflow; 
+    Sd_minflo(i+1)=max(Sd_minflo(i)+dt*(Ih1(i)-Od_minflo(i)-ET_RES),100*eps);
  
- ind_min_flo=1-min(floor(i/lag),1);
- Od_min_lag=[];
- Od_min_lag=mean(Od_minflo((i+(ind_min_flo*lag))-(lag-1):i));
- Ind_fun(i)=min(floor(Od_min_lag/(Ih_mean)),1);
- frac_gate=Ind_fun(i)*frac_gate_normal+(1-Ind_fun(i))*frac_gate_max; %either general or flood management
+    ind_min_flo=1-min(floor(i/lag),1);
+    Od_min_lag=[];
+    Od_min_lag=mean(Od_minflo((i+(ind_min_flo*lag))-(lag-1):i));
+    Ind_fun(i)=min(floor(Od_min_lag/(Ih_mean)),1);
+    frac_gate=Ind_fun(i)*frac_gate_normal+(1-Ind_fun(i))*frac_gate_max; %either general or flood management
 
- C_in_minflo=(1-C_ind(i))*C_in_bg; %high inflow generates washout
- C_minflo(i+1)=(Sd_minflo(i)*C_minflo(i))/Sd_minflo(i+1)+dt*(((Ih1(i)*C_in_minflo-Od_minflo(i)*C_minflo(i)-Sd_minflo(i)*k*C_minflo(i))/Sd_minflo(i+1)));
+    C_in_minflo=(1-C_ind(i))*C_in_bg; %high inflow generates washout
+    C_minflo(i+1)=(Sd_minflo(i)*C_minflo(i))/Sd_minflo(i+1)+dt*(((Ih1(i)*C_in_minflo-Od_minflo(i)*C_minflo(i)-Sd_minflo(i)*k*C_minflo(i))/Sd_minflo(i+1)));
 
 end
 
