@@ -6,6 +6,7 @@
 %
 %Date: 3/18/2019
 %--------------------------------------------------------------------------
+%Dam_Scenarios
 n=0.035; %manning's roughness coefficient for natural stream/major rivers
 So = 0.01; %bedslope
 w = 3; %channel width (meters)

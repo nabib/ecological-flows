@@ -37,7 +37,7 @@ Dur=4/24;                       % Duration of storm (hours per day) %climate cha
 annual_precip=1200;             % Annual precip. (mm/year)
 
 %--- Loop over return period of daily rainfall
-for kk=1:2 %why 29?
+for kk=1:3 %why 29?
 Ret_P(kk)=kk+1; %stays
 freq=1/(Ret_P(kk));             % Return frequency between days (1/d)
 
@@ -63,10 +63,12 @@ Ratio_out_2_in=Mass_Out/Mass_rain
 %--- Compute outflow from inflow using dS/dt = Inflow - Outflow - ET
 ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
 Sd(1)=0.01*Vcapacity;
-for i=1:Ntot
-  Od(i)=alpha*((Sd(i)+eps))^(beta); %storage outflow relationship
+
+McCann_Yodzis1994_Foodweb
+%for i=1:Ntot
+  %Od(i)=alpha*((Sd(i)+eps))^(beta); %storage outflow relationship
 %--- This is the mass balance equation:dS/dt = I - (S/alpha)^(1/beta)-ET 
-  Sd(i+1)=max(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES),100*eps);
+  %Sd(i+1)=max(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES),100*eps);
   
   % -------Od - update with nutrient regressions script ------
   %--- Compute sediment amount given outflow
@@ -77,47 +79,48 @@ for i=1:Ntot
   %Ph(i) = slope3*Od(i) + intercept3;
   %--- Compute DO given outflow
   %dO(i) = slope2*Od(i) + intercept2;
-end
+%end
 %%
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-%Plot_Simulations  %for each return frequency (commented for now)
-%++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-%--- Determine the statistical characteristics of the outflow after
-%ignoring the first 20% of the model runs (transients - affected by the
-%fact that the reservoir was empty).
-
-Od1=Od(floor(Ntot/5):Ntot);
-
-% --- compute the mean and std of inflow series
-In_F(kk)=mean(Ih1);
-In_std(kk)=std(Ih1);
-
-% --- compute the mean and std of outflow series as well as their CV
-OutF_mean(kk)=mean(Od1);
-OutF_std(kk)=std(Od1);
-OutF_CV(kk)=OutF_std(kk)/OutF_mean(kk);
-%--- check that the longterm outflow to inflow is close to unity
-%(stationarity check)
-Rout_eff(kk)=OutF_mean(kk)/In_F(kk);
-%--- Check the variability of outflow to inflow
-Rout_dissip(kk)=OutF_std(kk)/In_std(kk);
-
-%--- assume for now - a minimum environmental flow to be maintained
-Ocrit=In_F(kk);   %m3/year converted to m3/d - minimum environmental flow %Mean inflow
-Uc=[];
-
-%--- find the fraction of time the outflow drops below this minimum
-Uc=find(Od1<Ocrit);
-OutF_exe(kk)=length(Uc)/length(Od1);
+ Plot_Simulations  %for each return frequency (commented for now)
+ Plot_Foodweb
+% %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+% %--- Determine the statistical characteristics of the outflow after
+% %ignoring the first 20% of the model runs (transients - affected by the
+% %fact that the reservoir was empty).
+% 
+% Od1=Od(floor(Ntot/5):Ntot);
+% 
+% % --- compute the mean and std of inflow series
+% In_F(kk)=mean(Ih1);
+% In_std(kk)=std(Ih1);
+% 
+% % --- compute the mean and std of outflow series as well as their CV
+% OutF_mean(kk)=mean(Od1);
+% OutF_std(kk)=std(Od1);
+% OutF_CV(kk)=OutF_std(kk)/OutF_mean(kk);
+% %--- check that the longterm outflow to inflow is close to unity
+% %(stationarity check)
+% Rout_eff(kk)=OutF_mean(kk)/In_F(kk);
+% %--- Check the variability of outflow to inflow
+% Rout_dissip(kk)=OutF_std(kk)/In_std(kk);
+% 
+% %--- assume for now - a minimum environmental flow to be maintained
+% Ocrit=In_F(kk);   %m3/year converted to m3/d - minimum environmental flow %Mean inflow
+% Uc=[];
+% 
+% %--- find the fraction of time the outflow drops below this minimum
+% Uc=find(Od1<Ocrit);
+% OutF_exe(kk)=length(Uc)/length(Od1);
 end
-%%
-%figure(2)
-%plot(1:Ntot+1,Sd)
-%hold on
-%plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
-%figure(3)
-%plot(1:Ntot,Od)
-%hold on
-%plot (1:Ntot,ones(size(1:Ntot))*(mean(Ih1)))
-%Plot_OF_ReturnPeriod
-%print -djpeg99 Fig_As50
+% %%
+% figure(2)
+% plot(1:Ntot+1,Sd)
+% hold on
+% plot (1:Ntot+1,ones(size(1:Ntot+1))*(0.5*Vcapacity))
+% figure(3)
+% plot(1:Ntot,Od)
+% hold on
+% plot (1:Ntot,ones(size(1:Ntot))*(mean(Ih1)))
+% Plot_OF_ReturnPeriod
+% %print -djpeg99 Fig_As50

@@ -6,7 +6,7 @@
 %
 %Date: 3/25/2016
 %--------------------------------------------------------------------------
-Flood_Routing_Main;
+%Flood_Routing_Main;
 
 ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
 Sd(1)=0.5*Vcapacity;
@@ -16,11 +16,11 @@ baseflow = 0.1*max(Ih1);
 %C=nutrient loss (unit/m^3)
 %C_in=nutrient inflow constant (unit/m^3) 
 %k=nutrient decay rate (1/t)
-C_bg=0.3; %mg/l
-C(1)=C_bg;
-C_in_bg=0.6;
+N_bg=0.3; %mg/l
+N_reg(1)=N_bg;
+N_in_bg=0.6;
 k=.001;
-C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %if Ih dev from mean is higher 5*std
+N_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %if Ih dev from mean is higher 5*std
 
 
 Sd(1)=0.5*Vcapacity;
@@ -29,11 +29,14 @@ frac_gate=0.7;
 
 
 for i=1:Ntot
-    Od(i)=alpha*((Sd(i)+eps))^(beta) + baseflow; 
+    Od(i)=alpha*((Sd(i)+eps))^(beta); 
     Sd(i+1)=(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES));
-    C_in=(1-C_ind(i))*C_in_bg; %high inflow generates washout
-    C(i+1)=(Sd(i)*C(i))/Sd(i+1)+dt*(((Ih1(i)*C_in-Od(i)*C(i)-Sd(i)*k*C(i))/Sd(i+1)));
+    N_in_reg=(1-N_ind(i))*N_in_bg; %high inflow generates washout
+    N_reg(i+1)=(Sd(i)*N_reg(i))/Sd(i+1)+dt*(((Ih1(i)*N_in_reg-Od(i)*N_reg(i)-Sd(i)*k*N_reg(i))/Sd(i+1)));
 end
+
+%Add baseflow
+Od = Od+baseflow;
 
 % figure (1)
 % plot(Ih1)
@@ -54,7 +57,7 @@ end
 % title('Run-of-River')
 % 
 % figure (4)
-% plot(Od, C(1:Ntot))
+% plot(Od, C_reg(1:Ntot))
 % xlabel('Outflow (m^3/dt)')
 % ylabel('Nutrients (unit/m^3)')
 % title('Run-of-River')
@@ -69,24 +72,27 @@ frac_gate_normal=0.5;
 frac_gate_max=1;
 
 %Nutrient parameters:
-C_bg=0.3; %mg/l
-C_flood(1)=C_bg;
-C_in_bg=0.6;
+N_bg=0.3; %mg/l
+N_flood(1)=N_bg;
+N_in_bg=0.6;
 k=.001;
-C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
+N_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
 for i=1:Ntot
     Ind_fun=min(floor(Sd_flood(i)/(0.5*Vcapacity)),1); %below 50% = 0, above = 1
     
     frac_gate=Ind_fun*frac_gate_max+(1-Ind_fun)*frac_gate_normal; %either general or flood management
     [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
-    Od_flood(i)=alpha*((Sd_flood(i)+eps))^(beta) + baseflow; 
+    Od_flood(i)=alpha*((Sd_flood(i)+eps))^(beta); 
     Sd_flood(i+1)=max(Sd_flood(i)+dt*(Ih1(i)-Od_flood(i)-ET_RES),100*eps);
  
-    C_in_flood=(1-C_ind(i))*C_in_bg; %high inflow generates washout
-    C_flood(i+1)=(Sd_flood(i)*C_flood(i))/Sd_flood(i+1)+dt*(((Ih1(i)*C_in_flood-Od_flood(i)*C_flood(i)-Sd_flood(i)*k*C_flood(i))/Sd_flood(i+1)));
+    N_in_flood=(1-N_ind(i))*N_in_bg; %high inflow generates washout
+    N_flood(i+1)=(Sd_flood(i)*N_flood(i))/Sd_flood(i+1)+dt*(((Ih1(i)*N_in_flood-Od_flood(i)*N_flood(i)-Sd_flood(i)*k*N_flood(i))/Sd_flood(i+1)));
 
 end
+
+%Add baseflow
+Od_flood = Od_flood+baseflow;
 
 % figure (5)
 % plot(Od_flood)
@@ -117,11 +123,11 @@ frac_gate_normal=0.7;
 frac_gate_min=0;
 
 %Nutrient parameters:
-C_bg=0.3; %mg/l
-C_drought(1)=C_bg;
-C_in_bg=0.6;
+N_bg=0.3; %mg/l
+N_drought(1)=N_bg;
+N_in_bg=0.6;
 k=.001;
-C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
+N_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
 for i=1:Ntot
  
@@ -130,13 +136,16 @@ for i=1:Ntot
     frac_gate=Ind_fun*frac_gate_normal+(1-Ind_fun)*frac_gate_min; %either general or drought management
     [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
 
-    Od_drought(i)=alpha*((Sd_drought(i)+eps))^(beta) + baseflow; 
+    Od_drought(i)=alpha*((Sd_drought(i)+eps))^(beta); 
     Sd_drought(i+1)=max(Sd_drought(i)+dt*(Ih1(i)-Od_drought(i)-ET_RES),100*eps);
 
-    C_in_drought=(1-C_ind(i))*C_in_bg; %high inflow generates washout
-    C_drought(i+1)=(Sd_drought(i)*C_drought(i))/Sd_drought(i+1)+dt*(((Ih1(i)*C_in_drought-Od_drought(i)*C_drought(i)-Sd_drought(i)*k*C_drought(i))/Sd_drought(i+1)));
+    N_in_drought=(1-N_ind(i))*N_in_bg; %high inflow generates washout
+    N_drought(i+1)=(Sd_drought(i)*N_drought(i))/Sd_drought(i+1)+dt*(((Ih1(i)*N_in_drought-Od_drought(i)*N_drought(i)-Sd_drought(i)*k*N_drought(i))/Sd_drought(i+1)));
 
 end
+
+%Add baseflow
+Od_drought = Od_drought+baseflow;
 
 % figure (8)
 % plot(Od_drought)
@@ -164,16 +173,16 @@ Sd_natvar(1:Ntot+1)=0;
 Od_natvar=Ih1 + baseflow;
 
 %Nutrient parameters:
-C_bg=0.3; %mg/l
-C_natvar(1)=C_bg;
-C_in_bg=0.6;
+N_bg=0.3; %mg/l
+N_natvar(1)=N_bg;
+N_in_bg=0.6;
 k=0;
-C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %Washout
+N_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; %Washout
 
 %Nutrient parameters: washout yes, k no
 for i=1:Ntot
- C_in=(1-C_ind(i))*C_in_bg; %high inflow generates washout
- C_natvar(i+1)=C_in;
+ N_in_natvar=(1-N_ind(i))*N_in_bg; %high inflow generates washout
+ N_natvar(i+1)=N_in_natvar;
 end
 
 
@@ -198,17 +207,17 @@ frac_gate=0.6;
 frac_gate_max=0.8;
 
 %Nutrient parameters:
-C_bg=0.3; %mg/l
-C_minflo(1)=C_bg;
-C_in_bg=0.6;
+N_bg=0.3; %mg/l
+N_minflo(1)=N_bg;
+N_in_bg=0.6;
 k=.001;
-C_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
+N_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2; 
 
 Ih_mean=mean(Ih1);
 lag=floor(10/dt);
 for i=1:Ntot
     [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
-    Od_minflo(i)=alpha*((Sd_minflo(i)+eps))^(beta) + baseflow; 
+    Od_minflo(i)=alpha*((Sd_minflo(i)+eps))^(beta); 
     Sd_minflo(i+1)=max(Sd_minflo(i)+dt*(Ih1(i)-Od_minflo(i)-ET_RES),100*eps);
  
     ind_min_flo=1-min(floor(i/lag),1);
@@ -217,10 +226,13 @@ for i=1:Ntot
     Ind_fun(i)=min(floor(Od_min_lag/(Ih_mean)),1);
     frac_gate=Ind_fun(i)*frac_gate_normal+(1-Ind_fun(i))*frac_gate_max; %either general or flood management
 
-    C_in_minflo=(1-C_ind(i))*C_in_bg; %high inflow generates washout
-    C_minflo(i+1)=(Sd_minflo(i)*C_minflo(i))/Sd_minflo(i+1)+dt*(((Ih1(i)*C_in_minflo-Od_minflo(i)*C_minflo(i)-Sd_minflo(i)*k*C_minflo(i))/Sd_minflo(i+1)));
+    N_in_minflo=(1-N_ind(i))*N_in_bg; %high inflow generates washout
+    N_minflo(i+1)=(Sd_minflo(i)*N_minflo(i))/Sd_minflo(i+1)+dt*(((Ih1(i)*N_in_minflo-Od_minflo(i)*N_minflo(i)-Sd_minflo(i)*k*N_minflo(i))/Sd_minflo(i+1)));
 
 end
+
+%Add baseflow
+Od_minflo = Od_minflo+baseflow;
 
 %yy1= smooth(Od_minflo,C_minflo(1:Ntot), 0.1, 'loess') smooth
 % figure (14)
