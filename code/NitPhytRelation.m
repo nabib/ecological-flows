@@ -13,8 +13,6 @@ phi1 = 3284.239;
 phi2 = -45.14348;
 phi3 = 185.6056;
 x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
-min(nitrate)
-max(nitrate)
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
 
 % subplot(2,3,1)
@@ -31,8 +29,6 @@ phi2 = -45.14348;
 phi3 = 185.6056;
 x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
-min(nitrate)
-max(nitrate)
 % 
 % subplot(2,3,2)
 % %figure(2)
@@ -47,8 +43,7 @@ phi2 = -45.14348;
 phi3 = 185.6056;
 x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
-min(nitrate)
-max(nitrate)
+
 % 
 % subplot(2,3,3)
 % %figure(3)
@@ -63,8 +58,6 @@ phi2 = -45.14348;
 phi3 = 185.6056;
 x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
-min(nitrate);
-max(nitrate);
 
 % subplot(2,3,4)
 % %figure(4)
@@ -79,8 +72,6 @@ phi2 = -45.14348;
 phi3 = 185.6056;
 x = [min(nitrate):(max(nitrate)-min(nitrate))/7300000:max(nitrate)];
 phyt = phi1./(1+exp(-(phi2+phi3.*x)));
-min(nitrate)
-max(nitrate)
 
 % %figure(5)
 % subplot(2,3,5)

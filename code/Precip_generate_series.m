@@ -5,7 +5,7 @@ Pr=[];
 [Pr]=precip_generate (freq,dep, Nday);
 %----- Downscale it to sub-daily assuming precip. is distributed over 24h
 t_day=[dt:dt:1];
-M=length(t_day)
+M=length(t_day);
 daydis=zeros(1,M);
 
 

@@ -1,4 +1,5 @@
 %---- Graph the inflow and outflow hydrographs
+% Set all figures at same scale
 %% Regular Dam Scenario
 figure(1)
 clf

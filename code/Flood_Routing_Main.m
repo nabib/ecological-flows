@@ -37,8 +37,9 @@ Dur=4/24;                       % Duration of storm (hours per day) %climate cha
 annual_precip=1200;             % Annual precip. (mm/year)
 
 %--- Loop over return period of daily rainfall
-for kk=1:3 %why 29?
+for kk=1:29 %why 29?
 Ret_P(kk)=kk+1; %stays
+kk
 freq=1/(Ret_P(kk));             % Return frequency between days (1/d)
 
 dep=(annual_precip/365)/freq;   % Expected water depth (mm)
@@ -57,7 +58,7 @@ t=[0:1:Ntot]*dt;
 %---------- Check conservation of mass
 Mass_Out=dt*sum(Ids_F);
 Mass_rain=sum(P)*Factor;
-Ratio_out_2_in=Mass_Out/Mass_rain
+Ratio_out_2_in=Mass_Out/Mass_rain;
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 %--- Compute outflow from inflow using dS/dt = Inflow - Outflow - ET
@@ -65,46 +66,69 @@ ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
 Sd(1)=0.01*Vcapacity;
 
 McCann_Yodzis1994_Foodweb
-%for i=1:Ntot
-  %Od(i)=alpha*((Sd(i)+eps))^(beta); %storage outflow relationship
-%--- This is the mass balance equation:dS/dt = I - (S/alpha)^(1/beta)-ET 
-  %Sd(i+1)=max(Sd(i)+dt*(Ih1(i)-Od(i)-ET_RES),100*eps);
-  
-  % -------Od - update with nutrient regressions script ------
-  %--- Compute sediment amount given outflow
-  %Sed(i) = slope1*Od(i) + intercept1;
-  %--- Compute TN given outflow
-  %TNi(i) = slope5*Od(i) + intercept5;
-  %--- Compute P given outflow
-  %Ph(i) = slope3*Od(i) + intercept3;
-  %--- Compute DO given outflow
-  %dO(i) = slope2*Od(i) + intercept2;
-%end
+Sd_return(kk,:) = Sd;
+Sd_flood_return(kk,:) = Sd_flood;
+Sd_drought_return(kk,:) = Sd_drought;
+Sd_natvar_return(kk,:) = Sd_natvar;
+Sd_minflo_return(kk,:) = Sd_minflo;
+
+Od_return(kk,:) = Od;
+Od_flood_return(kk,:) = Od_flood;
+Od_drought_return(kk,:) = Od_drought;
+Od_natvar_return(kk,:) = Od_natvar;
+Od_minflo_return(kk,:) = Od_minflo;
+
+N_return(kk,:) = N_reg;
+N_flood_return(kk,:) = N_flood;
+N_drought_return(kk,:) = N_drought;
+N_natvar_return(kk,:) = N_natvar;
+N_minflo_return(kk,:) = N_minflo;
+
+R_return(kk,:) = R;
+C_return(kk,:) = C;
+P_return(kk,:) = P;
+
+R_drought_return(kk,:) = R_drought;
+C_drought_return(kk,:) = C_drought;
+P_drought_return(kk,:) = P_drought;
+
+R_flood_return(kk,:) = R_flood;
+C_flood_return(kk,:) = C_flood;
+P_flood_return(kk,:) = P_flood;
+
+R_natvar_return(kk,:) = R_natvar;
+C_natvar_return(kk,:) = C_natvar;
+P_natvar_return(kk,:) = P_natvar;
+
+R_minflo_return(kk,:) = R_minflo;
+C_minflo_return(kk,:) = C_minflo;
+P_minflo_return(kk,:) = P_minflo;
+
 %%
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- Plot_Simulations  %for each return frequency (commented for now)
- Plot_Foodweb
+ %Plot_Simulations  %for each return frequency (commented for now)
+ %Plot_Foodweb
 % %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-% %--- Determine the statistical characteristics of the outflow after
-% %ignoring the first 20% of the model runs (transients - affected by the
-% %fact that the reservoir was empty).
-% 
-% Od1=Od(floor(Ntot/5):Ntot);
-% 
-% % --- compute the mean and std of inflow series
-% In_F(kk)=mean(Ih1);
-% In_std(kk)=std(Ih1);
-% 
-% % --- compute the mean and std of outflow series as well as their CV
-% OutF_mean(kk)=mean(Od1);
-% OutF_std(kk)=std(Od1);
-% OutF_CV(kk)=OutF_std(kk)/OutF_mean(kk);
-% %--- check that the longterm outflow to inflow is close to unity
-% %(stationarity check)
-% Rout_eff(kk)=OutF_mean(kk)/In_F(kk);
-% %--- Check the variability of outflow to inflow
-% Rout_dissip(kk)=OutF_std(kk)/In_std(kk);
-% 
+%--- Determine the statistical characteristics of the outflow after
+%ignoring the first 20% of the model runs (transients - affected by the
+%fact that the reservoir was empty).
+
+Od1=Od(floor(Ntot/5):Ntot);
+
+% --- compute the mean and std of inflow series
+In_F(kk)=mean(Ih1);
+In_std(kk)=std(Ih1);
+
+% --- compute the mean and std of outflow series as well as their CV
+OutF_mean(kk)=mean(Od1);
+OutF_std(kk)=std(Od1);
+OutF_CV(kk)=OutF_std(kk)/OutF_mean(kk);
+%--- check that the longterm outflow to inflow is close to unity
+%(stationarity check)
+Rout_eff(kk)=OutF_mean(kk)/In_F(kk);
+%--- Check the variability of outflow to inflow
+Rout_dissip(kk)=OutF_std(kk)/In_std(kk);
+
 % %--- assume for now - a minimum environmental flow to be maintained
 % Ocrit=In_F(kk);   %m3/year converted to m3/d - minimum environmental flow %Mean inflow
 % Uc=[];
@@ -113,6 +137,7 @@ McCann_Yodzis1994_Foodweb
 % Uc=find(Od1<Ocrit);
 % OutF_exe(kk)=length(Uc)/length(Od1);
 end
+Plot_FoodWebReturn
 % %%
 % figure(2)
 % plot(1:Ntot+1,Sd)

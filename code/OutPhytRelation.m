@@ -17,7 +17,7 @@ y_natvar = ((Od_natvar.*n)./(sqrt(So)*w)).^(3/5);
 
 % Normalize the depth by ymax for natvar
 y_norm_natvar = y_natvar/max(y_natvar);
-plot(y_norm_natvar)
+%plot(y_norm_natvar)
 
 %% Regular dam scenario
 
@@ -26,7 +26,7 @@ y = ((Od.*n)./(sqrt(So)*w)).^(3/5);
 
 % Normalize the depth by ymax for natvar
 y_norm = y/max(y_natvar);
-plot(y_norm)
+%plot(y_norm)
 
 %% Flood management
 
@@ -35,7 +35,7 @@ y_flood = ((Od_flood.*n)./(sqrt(So)*w)).^(3/5);
 
 % Normalize the depth by ymax for natvar
 y_flood_norm = y_flood/max(y_natvar);
-plot(y_flood_norm)
+%plot(y_flood_norm)
 
 %% Drought management
 
@@ -44,7 +44,7 @@ y_drought = ((Od_drought.*n)./(sqrt(So)*w)).^(3/5);
 
 % Normalize the depth by ymax for natvar
 y_drought_norm = y_drought/max(y_natvar);
-plot(y_drought_norm)
+%plot(y_drought_norm)
 
 %% Minimum flow
 
@@ -53,4 +53,4 @@ y_minflo = ((Od_minflo.*n)./(sqrt(So)*w)).^(3/5);
 
 % Normalize the depth by ymax for natvar
 y_minflo_norm = y_flood/max(y_minflo);
-plot(y_minflo_norm)
+%plot(y_minflo_norm)

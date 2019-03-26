@@ -1,4 +1,6 @@
 %---- Graph the foodweb time series and phase diagrams
+% Fix labels
+% Common scale?
 %% Regular Dam Scenario
 
 figure(1)

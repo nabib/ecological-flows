@@ -28,7 +28,7 @@ xc=0.056; xp=0.01; yc=2.01; yp=5;Ro=0.161; Co=0.5;
 R=[]; C=[]; P=[];t=[];
 
 %------- Set initial guess at t=0
-R(1)=1; C(1)=1; P(1)=1;t(1)=0;
+R(1)=1; C(1)=1; P(1)=0.5;t(1)=0;
 
 phyt_calc = phi1./(1+exp(-(phi2+phi3.*N_reg)));
 phyt_max = (phi1./(1+exp(-(phi2+phi3.*N_in_reg))));
