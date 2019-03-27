@@ -1,4 +1,9 @@
-%---- Graph the foodweb time series and phase diagrams
+%--------------------------------------------------------------------------
+%Plot_Foodweb.m: Program to plot the foodweb time series and phase diagrams
+%
+%Authors: Nicole Abib
+%
+%Date: 3/27/18
 % Fix labels
 % Common scale?
 %% Regular Dam Scenario

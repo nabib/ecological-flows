@@ -1,3 +1,12 @@
+%--------------------------------------------------------------------------
+%Plot_Foodweb.m: Program to plot the foodweb phase diagrams at 3 different
+%return period spanning the length of the data
+%
+%Authors: Nicole Abib
+%
+%Date: 3/27/18
+
+% Set figures to same scale?
 %% Regular Dam Scenario
 figure(1)
 clf

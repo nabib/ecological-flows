@@ -28,7 +28,7 @@ xc=0.056; xp=0.01; yc=2.01; yp=5;Ro=0.161; Co=0.5;
 R=[]; C=[]; P=[];t=[];
 
 %------- Set initial guess at t=0
-R(1)=1; C(1)=1; P(1)=0.5;t(1)=0;
+R(1)=0.5; C(1)=0.5; P(1)=0.5;t(1)=0;
 
 phyt_calc = phi1./(1+exp(-(phi2+phi3.*N_reg)));
 phyt_max = (phi1./(1+exp(-(phi2+phi3.*N_in_reg))));
@@ -87,7 +87,7 @@ end
 R_flood=[]; C_flood=[]; P_flood=[];t=[];
 
 %------- Set initial guess at t=0
-R_flood(1)=1; C_flood(1)=1; P_flood(1)=1;t(1)=0;
+R_flood(1)=0.5; C_flood(1)=0.5; P_flood(1)=0.5;t(1)=0;
 
 phyt_calc_flood = phi1./(1+exp(-(phi2+phi3.*N_flood)));
 phyt_max_flood = (phi1./(1+exp(-(phi2+phi3.*N_in_flood))));
@@ -146,7 +146,7 @@ end
 R_drought=[]; C_drought=[]; P_drought=[];t=[];
 
 %------- Set initial guess at t=0
-R_drought(1)=1; C_drought(1)=1; P_drought(1)=1;t(1)=0;
+R_drought(1)=0.5; C_drought(1)=0.5; P_drought(1)=0.5;t(1)=0;
 
 phyt_calc_drought = phi1./(1+exp(-(phi2+phi3.*N_drought)));
 phyt_max_drought = (phi1./(1+exp(-(phi2+phi3.*N_in_drought))));
@@ -205,7 +205,7 @@ end
 R_natvar=[]; C_natvar=[]; P_natvar=[];t=[];
 
 %------- Set initial guess at t=0
-R_natvar(1)=1; C_natvar(1)=1; P_natvar(1)=1;t(1)=0;
+R_natvar(1)=0.5; C_natvar(1)=0.5; P_natvar(1)=0.5;t(1)=0;
 
 phyt_calc_natvar = phi1./(1+exp(-(phi2+phi3.*N_natvar)));
 phyt_max_natvar = (phi1./(1+exp(-(phi2+phi3.*N_in_natvar))));
@@ -264,7 +264,7 @@ end
 R_minflo=[]; C_minflo=[]; P_minflo=[];t=[];
 
 %------- Set initial guess at t=0
-R_minflo(1)=1; C_minflo(1)=1; P_minflo(1)=1;t(1)=0;
+R_minflo(1)=0.5; C_minflo(1)=0.5; P_minflo(1)=0.5;t(1)=0;
 
 phyt_calc_minflo = phi1./(1+exp(-(phi2+phi3.*N_minflo)));
 phyt_max_minflo = (phi1./(1+exp(-(phi2+phi3.*N_in_minflo))));

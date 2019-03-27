@@ -1,4 +1,10 @@
-%---- Graph the inflow and outflow hydrographs
+%--------------------------------------------------------------------------
+%Plot_Simulations.m: Graph the inflow and outflow hydrographs
+%
+%Authors: Nicole Abib
+%
+%Date: 3/27/18
+
 % Set all figures at same scale
 %% Regular Dam Scenario
 figure(1)

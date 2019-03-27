@@ -8,8 +8,6 @@ t_day=[dt:dt:1];
 M=length(t_day);
 daydis=zeros(1,M);
 
-
-% ask gaby about below
 I_c=find(t_day>dt & t_day<=Dur); %find locations where downscaled dt is > original dt and less than duration of a storm
 daydis(I_c)=1; %Create a logical vector
 daydis=daydis/sum(daydis);
