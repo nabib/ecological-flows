@@ -1,4 +1,4 @@
-function [P] = Precip_generate_series(freq,dep,Dur,Nday,dt)
+function [Precip] = Precip_generate_series(freq,dep,Dur,Nday,dt)
 %Generates sub-daily precipitation time series from modeled daily rainfall
 Pr=[];
 %----- Generate daily precipitation
@@ -12,10 +12,10 @@ I_c=find(t_day>dt & t_day<=Dur); %find locations where downscaled dt is > origin
 daydis(I_c)=1; %Create a logical vector
 daydis=daydis/sum(daydis);
 
-P=[];
+Precip=[];
 for i=1:Nday
     Ps=Pr(i)*daydis(1:M);
-    P=[P Ps];
+    Precip=[Precip Ps];
 end
 
 end

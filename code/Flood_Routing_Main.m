@@ -10,7 +10,7 @@
 %1 Cubic Foot = 0.0283168466 m3
 %g = 9.81 m/s/s - Gravitational acceleration
 %--------------------------------------------------------------------------
-clear all 
+clearvars 
 clc
 g=9.81;              % Gravitational constant (m/s/s)
 % ----------- Use geometry of Lake Wheeler dam ----------------------------
@@ -35,37 +35,39 @@ MM=length(UH);
 %---- Generate stats of rainfall (on daily basis-assumed as marked Poisson)
 Dur=4/24;                       % Duration of storm (hours per day) %climate change model can feed in here
 annual_precip=1200;             % Annual precip. (mm/year)
-
 %--- Loop over return period of daily rainfall
-for kk=1:29 %why 29?
+for kk=1:29 %30 days
     Ret_P(kk)=kk+1; %stays
     kk
     freq=1/(Ret_P(kk));             % Return frequency between days (1/d)
 
     dep=(annual_precip/365)/freq;   % Expected water depth (mm)
-    P=[];
-    [P] = Precip_generate_series(freq,dep,Dur,Nday,dt);
-    Ntot=length(P);
+    Precip=[];
+    [Precip] = Precip_generate_series(freq,dep,Dur,Nday,dt);
+    Ntot=length(Precip);
     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     %---- Assume PET
     PET = 0;                        % ET losses from reservoir (mm/d) factor in ET at some point
+    ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
     %---- Convert rainfall to inflow using the unit hydrograph and runoff coef.
     Factor=C_runoff*(Area_WS*(1000*1000))*((1/Dur)*(0.001));
-    Ids_F=Factor*conv(P,UH);    % Determine inflow from convolution of P and UH
+    Ids_F=Factor*conv(Precip,UH);    % Determine inflow from convolution of P and UH
     Ih1=[];
     Ih1=Ids_F(1:Ntot+1);        % This is the inflow in m3/d
     t=[0:1:Ntot]*dt;
     %---------- Check conservation of mass
     Mass_Out=dt*sum(Ids_F);
-    Mass_rain=sum(P)*Factor;
+    Mass_rain=sum(Precip)*Factor;
     Ratio_out_2_in=Mass_Out/Mass_rain;
     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     %--- Compute outflow from inflow using dS/dt = Inflow - Outflow - ET
-    ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
-    Sd(1)=0.01*Vcapacity;
+    Sd(1)=0.5*Vcapacity;
 
-    P_return(kk,:) = P;
+    Precip_return(kk,:) = Precip;
+    Ih1_return(kk,:) = Ih1;
+    baseflow = 0.01*max(Ih1_return(1,:));
+    Ih1 = (Ih1 + baseflow);
     Ih1_return(kk,:) = Ih1;
     
     McCann_Yodzis1994_Foodweb
@@ -118,56 +120,46 @@ for kk=1:29 %why 29?
     %ignoring the first 20% of the model runs (transients - affected by the
     %fact that the reservoir was empty).
     Od1=Od(floor(Ntot/5):Ntot);
+    Od1_flood=Od_flood(floor(Ntot/5):Ntot);
+    Od1_drought=Od_drought(floor(Ntot/5):Ntot);
+    Od1_natvar=Od_natvar(floor(Ntot/5):Ntot);
+    Od1_minflo=Od_minflo(floor(Ntot/5):Ntot);
+    
     % --- compute the mean and std of inflow series
     In_F(kk)=mean(Ih1);
     In_std(kk)=std(Ih1);
+    
     % --- compute the mean and std of outflow series as well as their CV
     OutF_mean(kk)=mean(Od1);
+    OutF_mean_flood(kk)=mean(Od1_flood);
+    OutF_mean_drought(kk)=mean(Od1_drought);
+    OutF_mean_natvar(kk)=mean(Od1_natvar);
+    OutF_mean_minflo(kk)=mean(Od1_minflo);
+    
     OutF_std(kk)=std(Od1);
+    OutF_std_flood(kk)=std(Od1_flood);
+    OutF_std_drought(kk)=std(Od1_drought);
+    OutF_std_natvar(kk)=std(Od1_natvar);
+    OutF_std_minflo(kk)=std(Od1_minflo);
+    
     OutF_CV(kk)=OutF_std(kk)/OutF_mean(kk);
+    OutF_CV_flood(kk)=OutF_std_flood(kk)/OutF_mean_flood(kk);
+    OutF_CV_drought(kk)=OutF_std_drought(kk)/OutF_mean_drought(kk);
+    OutF_CV_natvar(kk)=OutF_std_natvar(kk)/OutF_mean_natvar(kk);
+    OutF_CV_minflo(kk)=OutF_std_minflo(kk)/OutF_mean_minflo(kk);
+    
     %--- check that the longterm outflow to inflow is close to unity
     %(stationarity check)
     Rout_eff(kk)=OutF_mean(kk)/In_F(kk);
+    Rout_eff_flood(kk)=OutF_mean_flood(kk)/In_F(kk);
+    Rout_eff_drought(kk)=OutF_mean_drought(kk)/In_F(kk);
+    Rout_eff_natvar(kk)=OutF_mean_natvar(kk)/In_F(kk);
+    Rout_eff_minflo(kk)=OutF_mean_minflo(kk)/In_F(kk);
+    
     %--- Check the variability of outflow to inflow
     Rout_dissip(kk)=OutF_std(kk)/In_std(kk);
+    Rout_dissip_flood(kk)=OutF_std_flood(kk)/In_std(kk);
+    Rout_dissip_drought(kk)=OutF_std_drought(kk)/In_std(kk);
+    Rout_dissip_natvar(kk)=OutF_std_natvar(kk)/In_std(kk);
+    Rout_dissip_minflo(kk)=OutF_std_minflo(kk)/In_std(kk);
 end
-
-Plot_FoodWebStats
-Plot_FoodWebReturn
-Plot_OF_ReturnPeriod
-% 
-% csvwrite('Storage_regular.csv',Sd_return)
-% csvwrite('Storage_flood.csv',Sd_flood_return)
-% csvwrite('Storage_drought.csv',Sd_drought_return)
-% csvwrite('Storage_natvar.csv',Sd_natvar_return)
-% csvwrite('Storage_minflo.csv',Sd_minflo_return)
-% 
-% writematrix(Od_return)
-% writematrix(Od_flood_return)
-% writematrix(Od_drought_return)
-% writematrix(Od_natvar_return)
-% writematrix(Od_minflo_return)
-% 
-% writematrix(N_return)
-% writematrix(N_flood_return)
-% writematrix(N_drought_return)
-% writematrix(N_natvar_return)
-% writematrix(N_minflo_return)
-% 
-% writematrix(R_return)
-% writematrix(R_flood_return)
-% writematrix(R_drought_return)
-% writematrix(R_natvar_return)
-% writematrix(R_minflo_return)
-% 
-% writematrix(C_return)
-% writematrix(C_flood_return)
-% writematrix(C_drought_return)
-% writematrix(C_natvar_return)
-% writematrix(C_minflo_return)
-% 
-% writematrix(P_return)
-% writematrix(P_flood_return)
-% writematrix(P_drought_return)
-% writematrix(P_natvar_return)
-% writematrix(P_minflo_return)

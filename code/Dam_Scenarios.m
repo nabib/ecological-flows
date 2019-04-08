@@ -7,11 +7,6 @@
 %Date: 3/25/2016
 %--------------------------------------------------------------------------
 %Flood_Routing_Main;
-
-ET_RES=PET*Aplanar*0.001; % ET loss from reservoir (not watershed)
-Sd(1)=0.5*Vcapacity;
-baseflow = 0.1*max(Ih1);
-
 %% Regular Dam Scenario
 %C=nutrient loss (unit/m^3)
 %C_in=nutrient inflow constant (unit/m^3) 
@@ -80,7 +75,6 @@ N_ind=(1+(sign(Ih1-mean(Ih1)-5*std(Ih1))))/2;
 
 for i=1:Ntot
     Ind_fun=min(floor(Sd_flood(i)/(0.5*Vcapacity)),1); %below 50% = 0, above = 1
-    
     frac_gate=Ind_fun*frac_gate_max+(1-Ind_fun)*frac_gate_normal; %either general or flood management
     [alpha,beta]=Parameters_Gate_Regulation(frac_gate);
     Od_flood(i)=alpha*((Sd_flood(i)+eps))^(beta); 
@@ -99,8 +93,8 @@ Od_flood = Od_flood+baseflow;
 % xlabel('dt')
 % ylabel('Outflow (m^3/dt)')
 % title('Flood Management')
-% 
-% figure (6)
+% % 
+% % figure (6)
 % plot(Sd_flood)
 % xlabel('dt')
 % ylabel('Storage (m^3)')
@@ -170,7 +164,9 @@ Od_drought = Od_drought+baseflow;
 %% Natural Variability: Outflow equals Inflow.
 
 Sd_natvar(1:Ntot+1)=0;
-Od_natvar=Ih1 + baseflow;
+% Od_natvar=Ih1 + baseflow;
+Od_natvar=Ih1;
+
 
 %Nutrient parameters:
 N_bg=0.3; %mg/l
