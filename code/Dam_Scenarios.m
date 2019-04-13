@@ -6,7 +6,6 @@
 %
 %Date: 3/25/2016
 %--------------------------------------------------------------------------
-%Flood_Routing_Main;
 %% Regular Dam Scenario
 %C=nutrient loss (unit/m^3)
 %C_in=nutrient inflow constant (unit/m^3) 
@@ -113,7 +112,7 @@ Od_flood = Od_flood+baseflow;
 %If storage is less than 50% of the dam's capacity, no
 %water will be released from the dam (frac_gate_min).
 Sd_drought(1)=0.5*Vcapacity;
-frac_gate_normal=0.7;
+frac_gate_normal=0.8;
 frac_gate_min=0;
 
 %Nutrient parameters:

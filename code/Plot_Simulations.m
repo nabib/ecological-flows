@@ -69,7 +69,6 @@ set(gca,'FontSize',10)
 xlabel ('\it{t (d)}','fontweight','bold','fontsize',12)
 ylabel ('\it{Outflow (m3/d)}','fontweight','bold','fontsize',12)
 saveas(gcf,'../figures/flood_simulation.png')
-
 %% Drought Management
 figure()
 clf
